@@ -118,6 +118,7 @@ def call_updater(type_file):
     # path = path[:path.rfind('//')]
     is_dir = is_directory()
     if not is_dir:
+        os.mkdir('config')
         folder_path = f'{path}config'
         create_download_window(UPDATE_URL, str(folder_path))
         my_file = Path(f"{folder_path}\\updater.exe")
