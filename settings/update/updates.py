@@ -6,7 +6,7 @@ import PySimpleGUI as sg
 import requests
 import sys
 from pathlib import Path
-from settings.update.config import VERSION_URL, VERSION,  UPDATE_URL, APP_URL, APP_NAME, ZIP_URL
+from settings.update.config import VERSION_URL, VERSION,  UPDATE_URL, APP_URL, APP_NAME, ZIP_URL, UPDATE_NAME, UPDATE_FOLDER
 def web_error_panel(desc):
     event = sg.popup_ok(f'При загрузке данных возникла ошибка: {desc}',
                      background_color='#007bfb', button_color=('white', '#007bfb'),
@@ -118,23 +118,11 @@ def call_updater(type_file):
     # path = path[:path.rfind('//')]
     is_dir = is_directory()
     if not is_dir:
-        os.mkdir('config')
-        folder_path = f'{path}config'
-        create_download_window(UPDATE_URL, f'config/update.exe')
-        my_file = Path(f"{folder_path}\\updater.exe")
-        set_update_params('config/update.exe', is_dir, type_file)
+        os.mkdir(UPDATE_FOLDER)
+        upd_path = f'{UPDATE_FOLDER}/{UPDATE_NAME}'
+        create_download_window(UPDATE_URL, upd_path)
+        set_update_params(upd_path, is_dir, type_file)
 
-        # my_file = Path(f"{folder_path}\\updater.exe")
-        # if os.path.isdir('config'):
-        #     # может убрать слеши в пути и добавить сюда
-        #     if my_file.is_file():
-        #         set_update_params(str(my_file), is_dir, type_file)
-        #     else:
-        #         create_download_window(UPDATE_URL, str(my_file))
-        #         set_update_params(str(my_file), is_dir, type_file)
-        # else:
-        #     create_download_window(UPDATE_URL, str(my_file))
-        #     set_update_params(str(my_file), is_dir, type_file)
     else:
         path = get_subpath(path, 2)
         folder_path = f'{path}\\config'

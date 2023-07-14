@@ -9,7 +9,7 @@ from user_settings.user_interfaces import end_panel, error_panel
 
 if __name__ == "__main__":
         try:
-                pid = int(sys.argv[1])
+                pid = int(sys.argv[2])
         except:
                 pass
         else:
