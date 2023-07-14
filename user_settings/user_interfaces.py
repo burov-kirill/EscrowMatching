@@ -9,7 +9,7 @@ from PIL import Image
 
 from settings.update.updates import check_version, call_updater
 
-
+VERSION = '1.0.1'
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -59,7 +59,7 @@ def first_panel():
     tooltip_account = 'Если необходимо редактировать номенклатурные группы в ОСВ'
     tooltip_redaction = 'Если номенклатурные группы следует искать названии договора в ОСВ'
     tooltip_type = 'Если в ОСВ дата договора и номер не разделены, то снимите галочку'
-    yeet = sg.Window('Сверка Банка и ОСВ ver.1.0', background_color='#007bfb').Layout(
+    yeet = sg.Window(f'Сверка Банка и ОСВ ver {VERSION}', background_color='#007bfb').Layout(
         [
             [sg.Image(source = img_byte_arr)],
             [sg.Text('Выберите тип банка', pad=(3,3), background_color='#007bfb'),
