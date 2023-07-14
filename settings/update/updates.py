@@ -126,15 +126,21 @@ def call_updater(type_file):
 
     else:
         print('directory')
-        path = get_subpath(path, 2)
-        folder_path = f'{path}\\config'
-        my_file = Path(f"{folder_path}\\updater.exe")
-        if os.path.isdir('config'):
-            if my_file.is_file():
-                set_update_params(str(my_file), is_dir, type_file)
-            else:
-                create_download_window(UPDATE_URL, str(my_file))
-                set_update_params(str(my_file), is_dir, type_file)
-        else:
-            create_download_window(UPDATE_URL, str(my_file))
-            set_update_params(str(my_file), is_dir, type_file)
+        # path = get_subpath(path, 2)
+        path = os.path.dirname(sys.executable)
+        path = get_subpath(path, 1)
+        Path(f'{path}\\config').mkdir(parents=True, exist_ok=True)
+        folder_path = f'{path}\\config\\updater.exe'
+        # my_file = str(Path(f"{folder_path}\\updater.exe")).replace('\\', '/')
+        create_download_window(UPDATE_URL, folder_path)
+        set_update_params(folder_path, is_dir, type_file)
+
+        # if os.path.isdir('config'):
+        #     if my_file.is_file():
+        #         set_update_params(str(my_file), is_dir, type_file)
+        #     else:
+        #         create_download_window(UPDATE_URL, str(my_file))
+        #         set_update_params(str(my_file), is_dir, type_file)
+        # else:
+        #     create_download_window(UPDATE_URL, str(my_file))
+        #     set_update_params(str(my_file), is_dir, type_file)

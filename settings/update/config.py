@@ -1,5 +1,5 @@
 APP_URL = 'https://raw.githubusercontent.com/burov-kirill/EscrowMatching/master/dist/EscrowMatching.exe'
-ZIP_URL = ''
+ZIP_URL = 'https://raw.githubusercontent.com/burov-kirill/EscrowMatching/master/dist/EscrowMatching.exe'
 APP_NAME = 'EscrowMatching.exe'
 VERSION = '1.0.1'
 VERSION_URL = 'https://raw.githubusercontent.com/burov-kirill/EscrowMatching/main/__VERSION__'
