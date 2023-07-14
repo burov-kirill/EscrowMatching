@@ -96,7 +96,7 @@ def first_panel():
         if not upd_check:
             yeet['upd_txt'].Update(visible=True)
             yeet['upd_btn'].Update(visible=True)
-        if event == 'Обновить':
+        if event == 'upd_btn':
             yeet['pocket'].Update(visible=True)
             yeet['file'].Update(visible=True)
         if event in ('pocket', 'file'):
