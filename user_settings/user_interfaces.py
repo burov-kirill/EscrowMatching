@@ -8,8 +8,8 @@ import PySimpleGUI as sg
 from PIL import Image
 
 from settings.update.updates import check_version, call_updater
+from settings.update.config import VERSION
 
-VERSION = '1.0.1'
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
