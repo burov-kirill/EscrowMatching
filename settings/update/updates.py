@@ -1,10 +1,12 @@
 import subprocess
+import threading
 import time
+import os
 import PySimpleGUI as sg
 import requests
 import sys
 from pathlib import Path
-from settings.update.config import VERSION_URL, VERSION,  UPDATE_URL, APP_URL, APP_NAME
+from settings.update.config import VERSION_URL, VERSION,  UPDATE_URL, APP_URL, APP_NAME, ZIP_URL
 def web_error_panel(desc):
     event = sg.popup_ok(f'При загрузке данных возникла ошибка: {desc}',
                      background_color='#007bfb', button_color=('white', '#007bfb'),
@@ -89,7 +91,7 @@ def create_download_window(APP_URL, APP_NAME):
             percent.update(value=f'{count:>3d}%')
             window.refresh()
             if count == 100:
-                sleep(1)
+                time.sleep(1)
                 break
     window.close()
 
@@ -99,16 +101,19 @@ def get_subpath(path, i):
         path = path[:path.rfind('\\')]
     return path
 
-def set_update_params(updater_path, is_dir):
+def set_update_params(updater_path, is_dir, type_file):
     PATH = os.path.dirname(sys.executable)
     pid = str(os.getpid())
     FNULL = open(os.devnull, 'w')
-    URL = APP_URL
-    APP_NAME = APP_NAME
-    args = f'{updater_path} -config ' + URL + " " + APP_NAME + " " + pid + " " + PATH + " " + is_dir
+    if type_file == 'pocket':
+        URL =  ZIP_URL
+    else:
+        URL = APP_URL
+    APP = APP_NAME
+    args = f'{updater_path} -config ' + URL + " " + APP + " " + pid + " " + PATH + " " + is_dir
     subprocess.call(args, stdout=FNULL, stderr=FNULL, shell=False)
 
-def call_updater():
+def call_updater(type_file):
     path = os.path.abspath(__file__).replace(os.path.basename(__file__), '')
     # path = path[:path.rfind('//')]
     is_dir = is_directory()
@@ -118,23 +123,23 @@ def call_updater():
         if os.path.isdir('config'):
             # может убрать слеши в пути и добавить сюда
             if my_file.is_file():
-                set_update_params(str(my_file), is_dir)
+                set_update_params(str(my_file), is_dir, type_file)
             else:
                 create_download_window(UPDATE_URL, str(my_file))
-                set_update_params(str(my_file), is_dir)
+                set_update_params(str(my_file), is_dir, type_file)
         else:
             create_download_window(UPDATE_URL, str(my_file))
-            set_update_params(str(my_file), is_dir)
+            set_update_params(str(my_file), is_dir, type_file)
     else:
         path = get_subpath(path, 2)
         folder_path = f'{path}\\config'
         my_file = Path(f"{folder_path}\\updater.exe")
         if os.path.isdir('config'):
             if my_file.is_file():
-                set_update_params(str(my_file), is_dir)
+                set_update_params(str(my_file), is_dir, type_file)
             else:
                 create_download_window(UPDATE_URL, str(my_file))
-                set_update_params(str(my_file), is_dir)
+                set_update_params(str(my_file), is_dir, type_file)
         else:
             create_download_window(UPDATE_URL, str(my_file))
-            set_update_params(str(my_file), is_dir)
+            set_update_params(str(my_file), is_dir, type_file)

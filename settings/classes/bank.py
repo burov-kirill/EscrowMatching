@@ -6,8 +6,8 @@ import openpyxl
 import pandas as pd
 from logs import log
 from  collections import  defaultdict
-from settings.user_settings.user_exceptions import WorkbookFilterError, NotFoundColumns
-from settings.user_settings.user_interfaces import check_query_panel
+from user_settings.user_exceptions import WorkbookFilterError, NotFoundColumns
+from user_settings.user_interfaces import check_query_panel
 
 
 class BankFile:

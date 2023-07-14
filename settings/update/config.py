@@ -1,4 +1,5 @@
 APP_URL = 'https://raw.githubusercontent.com/burov-kirill/CRMandAccount/master/dist/CRMandBIT.exe'
+ZIP_URL = ''
 APP_NAME = 'EscrowMatching'
 VERSION = '1.0.1'
 VERSION_URL = 'https://raw.githubusercontent.com/burov-kirill/EscrowMatching/main/__VERSION__'

@@ -1,7 +1,7 @@
 import pandas as pd
 from settings.classes.account import AccountFile
 from settings.classes.bank import BankFile
-from settings.user_settings.user_interfaces import user_action
+from user_settings.user_interfaces import user_action
 
 pd.options.mode.chained_assignment = None
 

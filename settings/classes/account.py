@@ -5,8 +5,8 @@ import openpyxl
 import pandas as pd
 
 from logs import log
-from settings.user_settings.user_exceptions import PatternColumnsError, DifferentLengthError, WorkbookFilterError
-from settings.user_settings.user_interfaces import check_query_panel
+from user_settings.user_exceptions import PatternColumnsError, DifferentLengthError, WorkbookFilterError
+from user_settings.user_interfaces import check_query_panel
 
 
 class AccountFile:

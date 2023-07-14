@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['C:/Users/cyril/PycharmProjects/CRMprj/main.py'],
+    ['C:/Users/k.burov/PycharmProjects/EscrowMatching/main.py'],
     pathex=[],
     binaries=[],
     datas=[],
