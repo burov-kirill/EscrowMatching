@@ -100,6 +100,7 @@ def first_panel():
             yeet['pocket'].Update(visible=True)
             yeet['file'].Update(visible=True)
         if event in ('pocket', 'file'):
+            yeet.close()
             call_updater(event)
         if event == 'Cancel':
             sys.exit()

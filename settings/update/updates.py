@@ -119,17 +119,21 @@ def call_updater(type_file):
     is_dir = is_directory()
     if not is_dir:
         folder_path = f'{path}config'
+        create_download_window(UPDATE_URL, str(folder_path))
         my_file = Path(f"{folder_path}\\updater.exe")
-        if os.path.isdir('config'):
-            # может убрать слеши в пути и добавить сюда
-            if my_file.is_file():
-                set_update_params(str(my_file), is_dir, type_file)
-            else:
-                create_download_window(UPDATE_URL, str(my_file))
-                set_update_params(str(my_file), is_dir, type_file)
-        else:
-            create_download_window(UPDATE_URL, str(my_file))
-            set_update_params(str(my_file), is_dir, type_file)
+        set_update_params(str(my_file), is_dir, type_file)
+
+        # my_file = Path(f"{folder_path}\\updater.exe")
+        # if os.path.isdir('config'):
+        #     # может убрать слеши в пути и добавить сюда
+        #     if my_file.is_file():
+        #         set_update_params(str(my_file), is_dir, type_file)
+        #     else:
+        #         create_download_window(UPDATE_URL, str(my_file))
+        #         set_update_params(str(my_file), is_dir, type_file)
+        # else:
+        #     create_download_window(UPDATE_URL, str(my_file))
+        #     set_update_params(str(my_file), is_dir, type_file)
     else:
         path = get_subpath(path, 2)
         folder_path = f'{path}\\config'
