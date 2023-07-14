@@ -99,6 +99,7 @@ def create_download_window(APP_URL, APP_NAME):
 def get_subpath(path, i):
     while i > 0:
         path = path[:path.rfind('\\')]
+        i-=1
     return path
 
 def set_update_params(updater_path, is_dir, type_file):
