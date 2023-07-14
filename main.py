@@ -1,10 +1,20 @@
+import sys
+
 from logs import log, write_control_values
 from settings.functions.decorating import decoration
 from settings.functions.editing import find_matches
 from settings.functions.preprocessing import start
+from settings.update.updates import killProcess
 from settings.user_settings.user_interfaces import end_panel, error_panel
 
 if __name__ == "__main__":
+        # try:
+        #         pid = int(sys.argv[1])
+        # except:
+        #         pass
+        # else:
+        #         killProcess(pid)
+
         try:
                 bank_data, account_data, save_path = start()
                 matches, review, review_for_MSFO, one_more_review, contract_review = find_matches(account_data, bank_data)

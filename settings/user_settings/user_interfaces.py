@@ -7,7 +7,7 @@ import io
 import PySimpleGUI as sg
 from PIL import Image
 
-from settings.update.updates import check_version
+from settings.update.updates import check_version, call_updater
 
 
 def resource_path(relative_path):
@@ -87,15 +87,22 @@ def first_panel():
             [sg.OK(), sg.Cancel()]
         ])
     upd_check = check_version()
-    if not upd_check:
-        yeet['upd_txt'].Update(visible=True)
-        yeet['upd_btn'].Update(visible=True)
-    event, values = yeet.Read()
+    # if not upd_check:
+    #     yeet['upd_txt'].Update(visible=True)
+    #     yeet['upd_btn'].Update(visible=True)
+    while True:
+        event, values = yeet.Read(timeout=10)
+        # if not upd_check:
+        #     yeet['upd_txt'].Update(visible=True)
+        #     yeet['upd_btn'].Update(visible=True)
+        # if event == 'Обновить':
+        #     call_updater()
+        if event == 'Cancel':
+            sys.exit()
+        elif event == 'OK':
+            break
     yeet.close()
-    if event == 'Cancel':
-        sys.exit()
-    else:
-        return values
+    return values
 
 
 def second_panel(files):
@@ -204,9 +211,3 @@ def end_panel(path):
     else:
         sys.exit()
 
-def web_error_panel(desc):
-    event = sg.popup_ok(f'При загрузке данных возникла ошибка: {desc}',
-                     background_color='#007bfb', button_color=('white', '#007bfb'),
-                     title='Ошибка загрузки')
-    if event == 'OK':
-        sys.exit()

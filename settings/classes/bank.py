@@ -195,7 +195,7 @@ class BankFile:
         else:
             df = df[self.COLUMNS_FOR_BANKS[bank]['old_columns']]
         if bank == 'СБЕР':
-            # df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
+            df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
             df = self.set_query_and_house(df, bank, filename)
 
             self.contract_review = self.create_check_correct_values(df)
@@ -207,17 +207,17 @@ class BankFile:
         else:
             df.columns = self.COLUMNS_FOR_BANKS[bank]['new_columns']
             df['Договор'] = df['Договор'].apply(self.edit_bank_contract)
-            # if 'Сумма по ДДУ' not in df.columns:
-            #     df['Сумма по ДДУ'] = 0
+            if 'Сумма по ДДУ' not in df.columns:
+                df['Сумма по ДДУ'] = 0
 
-            # if bank == 'Альфа Банк':
-            #     df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
+            if bank == 'Альфа Банк':
+                df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
         if bank == 'МКБ':
             df['Сальдо'] = df['Сальдо'].apply(lambda x: float(str(x).replace(u'\xa0', u'').replace(',', '.')))
             df['Сумма по ДДУ'] = df['Сумма по ДДУ'].apply(lambda x: float(str(x).replace(u'\xa0', u'').replace(',', '.')))
         elif bank == 'Дом РФ':
             df = df[df['Сальдо'].map(lambda x: type(x) != str)]
-            # df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
+            df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
             df = self.edit_DOM_contract(df, filename)
 
         df['Договор (полный)'] = df['Договор'].apply(lambda x: str(x).upper())
@@ -234,7 +234,7 @@ class BankFile:
             #     df['Дом'] = df['Индекс'].apply(self.set_correct_house, args=[correct_values_dict])
         if bank in ('МКБ', 'ГПБ'):
             df = self.drop_double_rows(df, bank)
-            # df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
+            df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
 
         df['Договор'] = df['Договор'].apply(lambda x: str(x).upper())
         return df
