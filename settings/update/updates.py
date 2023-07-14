@@ -110,7 +110,7 @@ def set_update_params(updater_path, is_dir, type_file):
     else:
         URL = APP_URL
     APP = APP_NAME
-    args = f'{updater_path} -config ' + URL + " " + APP + " " + pid + " " + PATH + " " + is_dir
+    args = f'{updater_path} -config ' + URL + " " + APP + " " + pid + " " + PATH + " " + str(is_dir)
     subprocess.call(args, stdout=FNULL, stderr=FNULL, shell=False)
 
 def call_updater(type_file):
