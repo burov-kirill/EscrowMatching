@@ -125,6 +125,7 @@ def call_updater(type_file):
         set_update_params(upd_path, is_dir, type_file)
 
     else:
+        print('directory')
         path = get_subpath(path, 2)
         folder_path = f'{path}\\config'
         my_file = Path(f"{folder_path}\\updater.exe")
