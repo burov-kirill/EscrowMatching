@@ -1,0 +1,13 @@
+ERROR:user_log:[WinError 2] Не удается найти указанный файл
+Traceback (most recent call last):
+  File "EscrowMatching.py", line 19, in <module>
+  File "settings\functions\preprocessing.py", line 9, in start
+  File "user_settings\user_interfaces.py", line 31, in user_action
+  File "user_settings\user_interfaces.py", line 104, in first_panel
+  File "settings\update\updates.py", line 125, in call_updater
+  File "settings\update\updates.py", line 114, in set_update_params
+  File "subprocess.py", line 349, in call
+  File "subprocess.py", line 951, in __init__
+  File "subprocess.py", line 1420, in _execute_child
+FileNotFoundError: [WinError 2] Не удается найти указанный файл
+INFO:user_log:Авариный выход из программы

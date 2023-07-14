@@ -120,9 +120,9 @@ def call_updater(type_file):
     if not is_dir:
         os.mkdir('config')
         folder_path = f'{path}config'
-        create_download_window(UPDATE_URL, str(folder_path))
+        create_download_window(UPDATE_URL, f'config/update.exe')
         my_file = Path(f"{folder_path}\\updater.exe")
-        set_update_params(str(my_file), is_dir, type_file)
+        set_update_params('config/update.exe', is_dir, type_file)
 
         # my_file = Path(f"{folder_path}\\updater.exe")
         # if os.path.isdir('config'):
