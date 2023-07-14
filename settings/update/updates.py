@@ -42,7 +42,7 @@ def killProcess(pid):
 def is_directory():
     path = os.path.dirname(sys.executable)
     onlyfiles = [f[f.rfind('.')+1:] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-    if any(map(lambda x: x == 'pyd')):
+    if any(map(lambda x: x == 'pyd', onlyfiles)):
         return True
     else:
         return False
