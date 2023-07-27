@@ -47,8 +47,8 @@ def create_review_for_MSFO(bank, account):
         result = pd.merge(result, account_data, how='left', left_on=['Очередь', 'Дом'], right_on=['Очередь', 'Дом'])
         result.fillna(0, inplace=True)
 
-    result['% оплаты'] = result['Сальдо']/result['Сумма по ДДУ']*100
-    result['% оплаты'].astype(float).round(2)
+    result['% оплаты'] = result['Сальдо']/result['Сумма по ДДУ']
+    result['% оплаты'].astype(float).round(4)
     # result = result[['Очередь', 'Дом', 'Сальдо']]
     result = result[['Очередь', 'Дом', 'Сальдо', 'Сумма по ДДУ', '% оплаты']]
     # last_row = {'Очередь': 'ИТОГО', 'Дом': '', 'Сальдо': result['Сальдо'].sum()}

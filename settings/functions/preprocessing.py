@@ -5,8 +5,8 @@ from user_settings.user_interfaces import user_action
 
 pd.options.mode.chained_assignment = None
 
-def start():
-    data = user_action()
+def start(img_path = 'samolet.png'):
+    data = user_action(img_path)
     user_data = data
     path = user_data['save_to']
     account_data = AccountFile(user_data)

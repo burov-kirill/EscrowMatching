@@ -31,15 +31,18 @@ sg.LOOK_AND_FEEL_TABLE['SamoletTheme'] = {
 #
 # image_path = resource_path("samolet.png")
 
-img = Image.open('samolet.png')
-img_resized = img.resize((400, 100))
-img_byte_arr = io.BytesIO()
-img_resized.save(img_byte_arr, format='png', subsampling=0, quality=100)
-img_byte_arr = img_byte_arr.getvalue()
-BANK_NAMES = ['СБЕР', 'Альфа Банк', 'Совкомбанк', 'Дом РФ', 'МКБ', 'ВТБ', 'ГПБ', 'ПСБ', "ВБРР", "Промсвязьбанк"]
 
-def user_action():
-    values = first_panel()
+BANK_NAMES = ['СБЕР', 'Альфа Банк', 'Совкомбанк', 'Дом РФ', 'МКБ', 'ВТБ', 'ГПБ', 'ПСБ', "ВБРР", "Промсвязьбанк"]
+def set_img_option(img_path):
+    img = Image.open(img_path)
+    img_resized = img.resize((400, 100))
+    img_byte_arr = io.BytesIO()
+    img_resized.save(img_byte_arr, format='png', subsampling=0, quality=100)
+    img_byte_arr = img_byte_arr.getvalue()
+    return img_byte_arr
+
+def user_action(img_path):
+    values = first_panel(img_path)
     files_list = {y[y.rfind('\\') + 1:]: y for x in os.walk(values['bank_folder']) for y in
                   glob(os.path.join(x[0], '*.xlsx'))}
     result = dict()
@@ -65,8 +68,9 @@ def user_action():
 
 
 
-def first_panel():
+def first_panel(img_path):
     sg.theme('SamoletTheme')
+    img_byte_arr = set_img_option(img_path)
     SELECT_FRAME = [
         [sg.Listbox(values=BANK_NAMES, select_mode='LISTBOX_SELECT_MODE_SINGLE', key='bank_name', size=(30, 8)),
          sg.Column([

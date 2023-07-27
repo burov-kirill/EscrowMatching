@@ -12,13 +12,14 @@ if __name__ == "__main__":
         try:
                 pid = int(sys.argv[2])
         except:
-                pass
+                img_path = 'samolet.png'
         else:
                 killProcess(pid)
                 os.chdir(get_subpath(sys.argv[0], 1))
+                img_path = sys.argv[0][:sys.argv[0].rfind('\\')] + '\\samolet.png'
 
         try:
-                bank_data, account_data, save_path = start()
+                bank_data, account_data, save_path = start(img_path)
                 matches, review, review_for_MSFO, one_more_review, contract_review = find_matches(account_data, bank_data)
                 control_bank_sum, control_account_sum = decoration(matches, review, review_for_MSFO, one_more_review, contract_review, save_path)
                 write_control_values(bank_data.document_sum, account_data.document_sum,
