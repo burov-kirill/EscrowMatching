@@ -134,8 +134,9 @@ def get_house_and_query_list(bank, account):
     common_frame = common_frame.groupby(['Очередь', 'Дом'], as_index=False).count()
     return list(set(map(tuple, common_frame.values.tolist())))
 
+
 def find_queries(string, option=True):
-    numbers = re.findall(r'(\d\.?\d*)', string)
+    numbers = re.findall(r'(\d+\.?\d*)', string)
     if len(numbers) >= 2:
         if option:
             return numbers[0]
