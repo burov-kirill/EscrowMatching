@@ -108,6 +108,7 @@ class AccountFile:
         # account_data = account_data[['Тип', 'Договор', 'Контрагент', 'Сальдо']]
         account_data['Контрагент'] = account_data['Контрагент'].apply(lambda x: x.strip() if type(x) == str else x)
         account_data["Сальдо"] = pd.to_numeric(account_data["Сальдо"], errors='ignore')
+        account_data["Сумма по ДДУ"] = pd.to_numeric(account_data["Сумма по ДДУ"], errors='ignore')
         account_data = account_data.groupby(self.COL_PATTERN[self.TYPE_DOC], as_index=False).agg(sum)
         account_data['account_id'] = range(1, len(account_data) + 1)
         self.document_sum = self.sum_amount(account_data)

@@ -21,17 +21,17 @@ sg.LOOK_AND_FEEL_TABLE['SamoletTheme'] = {
                                         'BORDER': 1, 'SLIDER_DEPTH': 0,
                                         'PROGRESS_DEPTH': 0, }
 
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath("")
+# def resource_path(relative_path):
+#     try:
+#         base_path = sys._MEIPASS
+#     except Exception:
+#         base_path = os.path.abspath("")
+#
+#     return os.path.join(base_path, relative_path)
+#
+# image_path = resource_path("samolet.png")
 
-    return os.path.join(base_path, relative_path)
-
-image_path = resource_path("samolet.png")
-
-img = Image.open(image_path)
+img = Image.open('samolet.png')
 img_resized = img.resize((400, 100))
 img_byte_arr = io.BytesIO()
 img_resized.save(img_byte_arr, format='png', subsampling=0, quality=100)

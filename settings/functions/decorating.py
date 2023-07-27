@@ -70,7 +70,10 @@ def decoration_table(ws, table, col):
     rows = dataframe_to_rows(table, index=False)
     for r_idx, row in enumerate(rows, 2):
         for c_idx, value in enumerate(row, col):
-            ws.cell(row=r_idx, column=c_idx, value=value).number_format = '#,##0.00'
+            if c_idx == 14:
+                ws.cell(row=r_idx, column=c_idx, value=value).number_format = '0%'
+            else:
+                ws.cell(row=r_idx, column=c_idx, value=value).number_format = '#,##0.00'
 
     init_col = get_column_letter(col)
     end_col = get_column_letter(len(table.columns)+col-1)
@@ -95,7 +98,7 @@ def excel_list_decoration(d, ws):
     header_decoration(merge_cell, 'head')
 
     ws['H1'] = 'Разница' # исправить
-    ws['H2'] = '=L2-E2' # исправить
+    ws['H2'] = '=N2-F2' # исправить
     ws['H2'].border = Border(left=Side(style='thick'), right=Side(style='thick'),
                              top=Side(style='thick'), bottom=Side(style='thick'))
     header_decoration(ws['H1'], 'head') # исправить
