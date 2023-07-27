@@ -71,7 +71,7 @@ def decoration_table(ws, table, col):
     for r_idx, row in enumerate(rows, 2):
         for c_idx, value in enumerate(row, col):
             if c_idx == 14:
-                ws.cell(row=r_idx, column=c_idx, value=value).number_format = '0%'
+                ws.cell(row=r_idx, column=c_idx, value=value).number_format = '0.00%'
             else:
                 ws.cell(row=r_idx, column=c_idx, value=value).number_format = '#,##0.00'
 

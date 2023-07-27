@@ -53,7 +53,7 @@ def create_review_for_MSFO(bank, account):
     result = result[['Очередь', 'Дом', 'Сальдо', 'Сумма по ДДУ', '% оплаты']]
     # last_row = {'Очередь': 'ИТОГО', 'Дом': '', 'Сальдо': result['Сальдо'].sum()}
     last_row = {'Очередь': 'ИТОГО','Дом': '', 'Сальдо': result['Сальдо'].sum(), 'Сумма по ДДУ': result['Сумма по ДДУ'].sum(),
-                '% оплаты': round(result['Сальдо'].sum()/result['Сумма по ДДУ'].sum(),4)*100}
+                '% оплаты': round(result['Сальдо'].sum()/result['Сумма по ДДУ'].sum(),4)}
     result = pd.concat([result, pd.DataFrame(last_row, index=[0])])
     return result
 
