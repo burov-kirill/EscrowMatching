@@ -5,8 +5,10 @@ import pandas as pd
 pd.options.mode.chained_assignment = None
 from logs import log
 
-dict_columns = {5: ['Контрагент', 'Договор', 'Сальдо'],
-                4: ['Договор', 'Сальдо'], 3: ['Контрагент', 'Договор'], 2: ['Контрагент', 'Сальдо'], 1: []}
+dict_columns = {12: ['Контрагент', 'Договор', 'Номер счета', 'Сальдо'],
+                11: ['Договор', 'Номер счета', 'Сальдо'], 10: ['Контрагент', 'Номер счета', 'Договор'], 9: ['Контрагент', 'Номер счета', 'Сальдо'],
+                8: ['Контрагент', 'Договор', 'Сальдо'], 7: ['Договор', 'Номер счета'], 6: ['Договор', 'Сальдо'],
+                5: ['Контрагент', 'Договор'], 4: ['Контрагент', 'Номер счета'], 3: ['Контрагент', 'Сальдо'], 2: ['Номер счета', 'Сальдо'], 1: []}
 
 
 
@@ -27,12 +29,26 @@ def create_reaview(bank, account):
     result = pd.concat([result, pd.DataFrame(last_row, index=[0])])
     return result
 
-def create_review_for_MSFO(bank):
+def create_review_for_MSFO(bank, account):
     bank_data = copy(bank.df)
+    account_data = copy(account.df)
     bank_data["Сальдо"] = pd.to_numeric(bank_data["Сальдо"], errors='ignore')
-    bank_data["Сумма по ДДУ"] = pd.to_numeric(bank_data["Сумма по ДДУ"], errors='ignore')
+    # bank_data["Сумма по ДДУ"] = pd.to_numeric(bank_data["Сумма по ДДУ"], errors='ignore')
+
+    # добавить ответвление на случай если не будет столбца Сумма по ДДУ
+    bank_data = bank_data[['Очередь', 'Дом', "Сальдо", 'Сумма по ДДУ']]
     result = bank_data.groupby(['Очередь', 'Дом'], as_index=False).agg(sum)
-    result['% оплаты'] = round(result['Сальдо']/result['Сумма по ДДУ'],4)*100
+    if 'Сумма по ДДУ' in account_data.columns:
+        result.drop(['Сумма по ДДУ'], axis = 1, inplace=True)
+        # Убрать у банка этот столбец
+        # result but not mrg_data
+        account_data = account_data[['Очередь', "Дом", "Сумма по ДДУ"]]
+        account_data = account_data.groupby(['Очередь', 'Дом'], as_index=False).agg(sum)
+        result = pd.merge(result, account_data, how='left', left_on=['Очередь', 'Дом'], right_on=['Очередь', 'Дом'])
+        result.fillna(0, inplace=True)
+
+    result['% оплаты'] = result['Сальдо']/result['Сумма по ДДУ']*100
+    result['% оплаты'].astype(float).round(2)
     # result = result[['Очередь', 'Дом', 'Сальдо']]
     result = result[['Очередь', 'Дом', 'Сальдо', 'Сумма по ДДУ', '% оплаты']]
     # last_row = {'Очередь': 'ИТОГО', 'Дом': '', 'Сальдо': result['Сальдо'].sum()}
@@ -52,17 +68,35 @@ def create_one_more_review_for_MSFO(bank):
     result = pd.concat([result, pd.DataFrame(last_row, index=[0])])
     return result
 
+def fill_df_with_dict(row, esc_dict):
+    if row['Номер счета'] == '0':
+        tpl_data = (row['Контрагент'], row['Договор'])
+        match_acc = esc_dict.get(tpl_data, '0')
+        if match_acc != '0':
+            return f'!BLUE_{match_acc}'
+        else:
+            return match_acc
+    else:
+        return row['Номер счета']
+def edit_acc_escrow(acc_data, bank_data):
+    bank_data = bank_data[['Контрагент', 'Договор', 'Номер счета']]
+    escrow_dict = {(row['Контрагент'], row['Договор']): row['Номер счета'] for (index, row) in bank_data.iterrows()}
+    acc_data['Номер счета'] = acc_data.apply(fill_df_with_dict, axis = 1, args=[escrow_dict])
+    return acc_data
+
+
 def find_matches(account, bank):
     log.info(f'Начало процедуры нахождения соответствий в файлах')
     result_dict = dict()
     account_data = copy(account.df)
     bank_data = copy(bank.df)
+    account_data = edit_acc_escrow(account_data, bank_data)
     account_data['Очередь_Дом'] = account_data['Очередь'] + "_" + account_data['Дом']
     bank_data['Очередь_Дом'] = bank_data['Очередь'] + "_" + bank_data['Дом']
     query_house_frame = list(map(lambda x: x[0] + '_' + x[1], get_house_and_query_list(bank_data,account_data)))
     query_house_frame.append('Общий')
     review = create_reaview(bank_data, account_data)
-    review_for_MSFO = create_review_for_MSFO(bank)
+    review_for_MSFO = create_review_for_MSFO(bank, account)
     one_more_review = create_one_more_review_for_MSFO(bank)
     for i, row in enumerate(query_house_frame, 1):
         if row != 'Общий':
@@ -75,6 +109,7 @@ def find_matches(account, bank):
             excel_dict = dict()
             temp_bank = bank.df
             temp_account = account.df
+            temp_account = edit_acc_escrow(temp_account, temp_bank)
         for key, value in sorted(dict_columns.items(), reverse=True):
             if key != 1:
                 temp_df = pd.merge(temp_account, temp_bank, how='inner', left_on=value, right_on=value)

@@ -10,7 +10,13 @@ from user_settings.user_interfaces import check_query_panel
 
 
 class AccountFile:
+    TYPE_DOC = 1
+    COL_PATTERN = {
+        1: ['Тип', 'Договор', 'Контрагент', 'Номер счета'],
+        0: ['Тип', 'Договор', 'Контрагент']
+    }
     COLUMN_PATTERNS = {
+        (str, str, str, np.float64, str): ('new', ['Полный договор', "Контрагент", "Договор", "Сальдо", 'Тип']),
         (str, str, str, np.float64, str): ('new', ['Полный договор', "Контрагент", "Договор", "Сальдо", 'Тип']),
         (str, str, str, np.float64, np.float64, str): (
         'new', ['Полный договор', "Контрагент", "Договор", "Оборот", "Сальдо", 'Тип']),
@@ -19,7 +25,6 @@ class AccountFile:
 
     def __init__(self, user_data_dict):
         self.name_account_file = user_data_dict['account']
-        self.type_of_file = user_data_dict['type']
         self.check_nomenclature = user_data_dict['check_nomenclature']
         self.is_check_account = user_data_dict['check_account']
         if len(user_data_dict['bank_name']) > 0:
@@ -47,13 +52,13 @@ class AccountFile:
         return data
 
     def edit_account_data(self, raw_account_data, bank_name):
-        if self.type_of_file == False:
-            merged_celles = []
-            for cell in raw_account_data.merged_cells.ranges:
-                if cell.coord.split(':')[0][0]=='A' and cell.coord.split(':')[1][0]=='C':
-                    merged_celles.append(cell.coord.split(':')[0])
-        else:
-            merged_celles = list(map(lambda x: x.coord.split(':')[0], raw_account_data.merged_cells.ranges))
+        # if self.type_of_file == False:
+        #     merged_celles = []
+        #     for cell in raw_account_data.merged_cells.ranges:
+        #         if cell.coord.split(':')[0][0]=='A' and cell.coord.split(':')[1][0]=='C':
+        #             merged_celles.append(cell.coord.split(':')[0])
+        # else:
+        merged_celles = list(map(lambda x: x.coord.split(':')[0], raw_account_data.merged_cells.ranges))
 
         projects = []
         for row in raw_account_data:
@@ -65,8 +70,9 @@ class AccountFile:
         j = 0
         prj = ''
         for i, row in enumerate(raw_account_data):
-            column = 1 if self.type_of_file else 2
-            if sum(map(lambda x: x.value is not None, row)) not in (3, 4, 5, 6) or row[column].value is None:
+            # column = 1 if self.type_of_file else 2
+            column = 1
+            if sum(map(lambda x: x.value is not None, row)) not in (3, 4, 5, 6, 7, 8, 9) or row[column].value is None:
                 if row[0].value == '<...>' and row[0].coordinate not in merged_celles:
                     headers_list.append((j, prj))
                     j += 1
@@ -78,27 +84,31 @@ class AccountFile:
             else:
                 headers_list.append((j, prj))
                 j += 1
-        col_indexes = []
+        # col_indexes = []
         account = pd.DataFrame(raw_account_data.values)
         account.drop(row_indexes, inplace=True)
-
-        for i, col in enumerate(account.columns):
-            if sum(map(lambda x: x is None, account[col])) > sum(map(lambda x: x is not None, account[col])):
-                col_indexes.append(i)
-
-        account.drop(col_indexes, axis=1, inplace=True)
+        #
+        # for i, col in enumerate(account.columns):
+        #     if sum(map(lambda x: x is None, account[col])) > sum(map(lambda x: x is not None, account[col])):
+        #         col_indexes.append(i)
         account.reset_index(inplace=True)
-        account.drop('index', axis=1, inplace=True)
+        str_col = [col for col in account.columns if account[col][0]!=None and col !='index']
+        str_col.append(account.columns[-2])
+        account = account[str_col]
+
+        # account.drop(col_indexes, axis=1, inplace=True)
+        # account.reset_index(inplace=True)
+        # account.drop('index', axis=1, inplace=True)
         prj_df = pd.DataFrame(headers_list, columns=['index', 'prj'])
         prj_df.set_index('index', inplace=True)
 
         account_data = self.get_projects_name_for_account_data(account, prj_df)
         account_data['Договор'] = account_data['Договор'].apply(lambda x: 'бн' if 'б/н' in str(x) else str(x))
         account_data.sort_values(by=['Договор'], inplace=True)
-        account_data = account_data[['Тип', 'Договор', 'Контрагент', 'Сальдо']]
+        # account_data = account_data[['Тип', 'Договор', 'Контрагент', 'Сальдо']]
         account_data['Контрагент'] = account_data['Контрагент'].apply(lambda x: x.strip() if type(x) == str else x)
         account_data["Сальдо"] = pd.to_numeric(account_data["Сальдо"], errors='ignore')
-        account_data = account_data.groupby(['Тип', 'Договор', 'Контрагент'], as_index=False).agg(sum)
+        account_data = account_data.groupby(self.COL_PATTERN[self.TYPE_DOC], as_index=False).agg(sum)
         account_data['account_id'] = range(1, len(account_data) + 1)
         self.document_sum = self.sum_amount(account_data)
         account_data['Сальдо'] = account_data['Сальдо'].apply(str)
@@ -174,21 +184,28 @@ class AccountFile:
             log.exception(DifferentLengthError)
             raise DifferentLengthError
         account = account.fillna(0)
-        columns_types = tuple(map(type, account.iloc[0]))
-        succes_tag = False
-        for key, value in self.COLUMN_PATTERNS.items():
-            if key == columns_types:
-                succes_tag = True
-                account.columns = value[1]
-                if value[0] == 'new':
-                    account.drop(index=0, axis=0, inplace=True)
-                if value[0] == 'old':
-                    account['Договор'] = account['Договор'].apply(self.get_contract)
-                break
-
-        if not succes_tag:
-            log.exception(PatternColumnsError)
-            raise PatternColumnsError(columns_types, account.columns)
+        if len(account.columns) == 5:
+            self.TYPE_DOC = 0
+            account.columns = ['Полный договор', "Контрагент", "Договор", "Сальдо", 'Тип']
+        else:
+            account.columns = ['Полный договор', "Контрагент", "Договор", "Номер счета", "Сумма по ДДУ", "Сальдо", 'Тип']
+            account['Номер счета'] = account['Номер счета'].apply(str)
+        account.drop(index=0, axis=0, inplace=True)
+        # columns_types = tuple(map(type, account.iloc[0]))
+        # succes_tag = False
+        # for key, value in self.COLUMN_PATTERNS.items():
+        #     if key == columns_types:
+        #         succes_tag = True
+        #         account.columns = value[1]
+        #         if value[0] == 'new':
+        #             account.drop(index=0, axis=0, inplace=True)
+        #         if value[0] == 'old':
+        #             account['Договор'] = account['Договор'].apply(self.get_contract)
+        #         break
+        #
+        # if not succes_tag:
+        #     log.exception(PatternColumnsError)
+        #     raise PatternColumnsError(columns_types, account.columns)
         return account
 
     def get_contract(self, row: str) -> str:
@@ -221,3 +238,4 @@ class AccountFile:
         result = sum([float(elem) if elem != '' else 0 for elem in df['Сальдо']])
         log.info(f'Сумма по данному документу: {result}')
         return result
+

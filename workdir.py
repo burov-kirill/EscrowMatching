@@ -1,3 +1,44 @@
+import PySimpleGUI as sg
+#set the theme for the screen/window
+sg.theme("DarkTanBlue")
+#define layout
+sz=(10,20)
+col1=[
+        [sg.Text('Column1', background_color='red', size=sz)],
+        [sg.InputText(default_text='dd', key=f'_query',
+                                    background_color='white', text_color='black')]
+]
+col2=[[sg.Text('Column2', background_color='green', size=sz)]]
+col3=[[sg.Text('Column3', background_color='yellow', size=sz)]]
+col4=[[sg.Text('Column4', background_color='blue', size=sz)]]
+
+layout = [[sg.Column(col1), sg.Column(col2, element_justification='c')
+          , sg.Column(col3, element_justification='c'), sg.Column(col4, element_justification='c')]]
+
+window =sg.Window("Column and Frame",layout)
+event,values=window.read()
+
+window.close()
+
+
+
+# from settings.classes.account import AccountFile
+# # data =          {
+# #                 'account': r"C:\Users\k.burov\Desktop\Сверка_Эскроу\Оборотно-сальдовая ведомость по счету 009.СЭ за ... - 16 июля 2023 г. ООО  СПЕЦИАЛИЗИРОВАННЫЙ ЗАСТРОЙЩИК  САМОЛЕТ-АЛХИМОВО.xlsx",
+# #                 'bank_name': ['СБЕР'],
+# #                 'type': True,
+# #                 'check_nomenclature': True,
+# #                 'check_account': False
+# #             }
+# data =          {
+#         'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Алхимово (R)+\ОСВ по счету 009.СЭ за ... - 1 квартал 2023 г.АЛХИМОВО.xlsx",
+#         'bank_name': ['СБЕР'],
+#         'type': True,
+#         'check_nomenclature': True,
+#         'check_account': False
+#             }
+# obj = AccountFile(data)
+# print(obj)
 # # import re
 # #
 # #
@@ -1086,15 +1127,15 @@
 #     write_control_values(bank.document_sum, account.document_sum,
 #                          bank.count_documents, control_bank_sum, control_account_sum
 
-from itertools import product
-def func(numbers):
-    drop_idx = [i * (len(numbers)) - 1 for i in range(1, len(numbers))]
-    combinations = list(product(numbers, numbers[1:]))
-    drop_combinations = list(filter(lambda x: combinations.index(x) and x[0]!=x[1] not in drop_idx, combinations))
-    comb_dict = dict()
-    for value in drop_combinations:
-        comb_dict[tuple(sorted(value))] = round(abs(float(value[0] - value[1])), 2)
-    print(*min(comb_dict.items(), key=lambda x: x[1])[0])
-
-
-func([6.1, 4.3, 7.2, 6.3, 9.3, 6.1])
+# from itertools import product
+# def func(numbers):
+#     drop_idx = [i * (len(numbers)) - 1 for i in range(1, len(numbers))]
+#     combinations = list(product(numbers, numbers[1:]))
+#     drop_combinations = list(filter(lambda x: combinations.index(x) and x[0]!=x[1] not in drop_idx, combinations))
+#     comb_dict = dict()
+#     for value in drop_combinations:
+#         comb_dict[tuple(sorted(value))] = round(abs(float(value[0] - value[1])), 2)
+#     print(*min(comb_dict.items(), key=lambda x: x[1])[0])
+#
+#
+# func([6.1, 4.3, 7.2, 6.3, 9.3, 6.1])

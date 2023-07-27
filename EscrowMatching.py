@@ -1,10 +1,11 @@
+import os
 import sys
 
 from logs import log, write_control_values
 from settings.functions.decorating import decoration
 from settings.functions.editing import find_matches
 from settings.functions.preprocessing import start
-from settings.update.updates import killProcess
+from settings.update.updates import killProcess, get_subpath
 from user_settings.user_interfaces import end_panel, error_panel
 
 if __name__ == "__main__":
@@ -14,6 +15,7 @@ if __name__ == "__main__":
                 pass
         else:
                 killProcess(pid)
+                os.chdir(get_subpath(sys.argv[0], 1))
 
         try:
                 bank_data, account_data, save_path = start()

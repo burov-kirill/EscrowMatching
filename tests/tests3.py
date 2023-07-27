@@ -2,6 +2,7 @@
 import unittest
 
 from settings.classes.account import AccountFile
+from settings.classes.bank import BankFile
 
 
 class TestCalc(unittest.TestCase):
@@ -242,28 +243,24 @@ class TestCalc(unittest.TestCase):
             'Алхимово': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Алхимово (R)+\ОСВ по счету 009.СЭ за ... - 1 квартал 2023 г.АЛХИМОВО.xlsx",
                 'bank_name': ['СБЕР'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Томилино': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Томилино (R)\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ-ТОМИЛИНО.xlsx",
                 'bank_name': ['ВТБ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Верейская': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Верейская 41 (R)\Оборотно-сальдовая ведомость по счету 009.СЭ  СЗ  САМОЛЕТ-ВЕРЕЙСКАЯ.xlsx",
                 'bank_name': ['МКБ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Горки Парк': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Горки Парк, Сам-Коробово (R)+\ОСВ по счету 009.СЭ СЗ  САМОЛЕТ-КОРОБОВО.xlsx",
                 'bank_name': ['СБЕР'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
 
@@ -271,21 +268,18 @@ class TestCalc(unittest.TestCase):
             'Егорово Парк': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Егорово Парк, Сам-Жилино (R)+\ОСВ по счету 009.СЭ СЗ  САМОЛЕТ-ЖИЛИНО.xlsx",
                 'bank_name': ['СБЕР'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Заречье': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Заречье (R)\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ-ЗАРЕЧЬЕ.xlsx",
                 'bank_name': ['Совкомбанк'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Иванкино': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Квартал Иванкино (Самолёт-Олимп) (R)\ОСВ по счету 009.СЭ САМОЛЕТ-ОЛИМП.xlsx",
                 'bank_name': ['МКБ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
@@ -299,7 +293,6 @@ class TestCalc(unittest.TestCase):
             'Люберцы': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Люберцы (R)\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ ДЕВЕЛОПМЕНТ.xlsx",
                 'bank_name': ['Альфа Банк'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
 
@@ -307,28 +300,24 @@ class TestCalc(unittest.TestCase):
             'Молжаниново': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Молжаниново (R)\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ-МОЛЖАНИНОВО.xlsx",
                 'bank_name': ['МКБ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Мытищи': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Мытищи Парк (Самолет-Мытищи) (R)+\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ-МЫТИЩИ.xlsx",
                 'bank_name': ['Альфа Банк'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Новоданиловская': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Новоданиловская 8 (R)\Оборотно-сальдовая ведомость по счету 009.СЭ ДМ АПАРТМЕНТС.xlsx",
                 'bank_name': ['Дом РФ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Остафьево': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Остафьево (СР-Групп) (R)+\Оборотно-сальдовая ведомость по счету 009.СЭ СР-ГРУПП.xlsx",
                 'bank_name': ['ВТБ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
@@ -342,70 +331,60 @@ class TestCalc(unittest.TestCase):
             'Новое Внуково': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Новое Внуково, Санино 1 (R)+\Оборотно-сальдовая ведомость по счету 009.СЭ СЗ  САНИНО 1.xlsx",
                 'bank_name': ['СБЕР'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Прибрежный парк': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Прибрежный парк (R)+\ОСВ по счету 009.СЭ СЗ  ПРИБРЕЖНЫЙ ПАРК.xlsx",
                 'bank_name': ['СБЕР'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Пригород Лесное': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Пригород Лесное  (R)+\Оборотно-сальдовая ведомость по счету 009.СЭ ПРИГОРОД ЛЕСНОЕ.xlsx",
                 'bank_name': ['СБЕР'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Пятницкие кварталы': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Пятницкие луга (Юрлово) (R)+\ОСВ по счету 009.СЭ САМОЛЕТ-ЮРЛОВО.xlsx",
                 'bank_name': ['СБЕР'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Спутник': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Спутник\Оборотно-сальдовая ведомость по счету 009.СЭ СЗ  БУХТА ЛЭНД.xlsx",
                 'bank_name': ['ПСБ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Тропарево Парк': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Тропарёво Парк, Сам-Дудкино (R)+\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ-ДУДКИНО.xlsx",
                 'bank_name': ['СБЕР'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Сабурово': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Сабурово-1 (Р)\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ-САБУРОВО-1.xlsx",
                 'bank_name': ['ГПБ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Долина Яузы': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Долина Яузы (СЗ Реновация Мытищи) (R)\Оборотно-сальдовая ведомость по счету 009.СЭ СЗ  РЕНОВАЦИЯ-МЫТИЩИ.xlsx",
                 'bank_name': ['Альфа Банк'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Квартал Западный': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Квартал Западный (R)\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ-КВАРТАЛ ЗАПАДНЫЙ.xlsx",
                 'bank_name': ['Альфа Банк'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             },
             'Новое Видное': {
                 'account': r"W:\ФИНАНСОВО-ПРАВОВОЙ БЛОК\Дирекция по экономике и финансам\МСФО\Сверка Эскроу\Для тестов\2. Сверка на 31.03.2023г\Новое Видное - Калиновка (Р)\Оборотно-сальдовая ведомость по счету 009.СЭ САМОЛЕТ-КАЛИНОВКА.xlsx",
                 'bank_name': ['ГПБ'],
-                'type': True,
                 'check_nomenclature': True,
                 'check_account': False
             }
@@ -426,18 +405,18 @@ class TestCalc(unittest.TestCase):
                                     }
 
 
-    # def test_new_bank(self):
-    #     for key, value in self.new_bank_file_dict.items():
-    #         account = AccountFile(self.new_account_file_dict[key])
-    #         print(key)
-    #         bank = BankFile(value, account.type_dict)
-    #         number = bank.document_sum
-    #         self.assertEqual(round(number), round(self.new_control_bank_sum_dict[key]))
+    def test_new_bank(self):
+        for key, value in self.new_bank_file_dict.items():
+            account = AccountFile(self.new_account_file_dict[key])
+            print(key)
+            bank = BankFile(value, account.type_dict)
+            number = bank.document_sum
+            self.assertEqual(round(number), round(self.new_control_bank_sum_dict[key]))
 
 
     #
 
-    def test_new_account(self):
-        for key, value in self.new_account_file_dict.items():
-            number = AccountFile(value).document_sum
-            self.assertEqual(round(number), round(self.new_control_account_sum_dict[key]))
+    # def test_new_account(self):
+    #     for key, value in self.new_account_file_dict.items():
+    #         number = AccountFile(value).document_sum
+    #         self.assertEqual(round(number), round(self.new_control_account_sum_dict[key]))

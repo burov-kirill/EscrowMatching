@@ -6,7 +6,7 @@ import PySimpleGUI as sg
 import requests
 import sys
 from pathlib import Path
-from settings.update.config import VERSION_URL, VERSION,  UPDATE_URL, APP_URL, APP_NAME, ZIP_URL, UPDATE_NAME, UPDATE_FOLDER
+from settings.update.config import VERSION_URL, VERSION,  UPDATE_URL, APP_NAME, ZIP_URL, UPDATE_NAME, UPDATE_FOLDER
 def web_error_panel(desc):
     event = sg.popup_ok(f'При загрузке данных возникла ошибка: {desc}',
                      background_color='#007bfb', button_color=('white', '#007bfb'),
@@ -102,38 +102,27 @@ def get_subpath(path, i):
         i-=1
     return path
 
-def set_update_params(updater_path, is_dir, type_file):
+def set_update_params(updater_path, type_file):
     PATH = os.path.dirname(sys.executable)
     pid = str(os.getpid())
     FNULL = open(os.devnull, 'w')
-    if type_file == 'pocket':
-        URL =  ZIP_URL
-    else:
-        URL = APP_URL
+    URL = ZIP_URL
     APP = APP_NAME
-    args = f'{updater_path} -config ' + URL + " " + APP + " " + pid + " " + PATH + " " + str(is_dir)
+    args = f'{updater_path} -config ' + URL + " " + APP + " " + pid + " " + PATH
     subprocess.call(args, stdout=FNULL, stderr=FNULL, shell=False)
 
-def call_updater(type_file):
+def call_updater(type_file = 'pocket'):
     path = os.path.abspath(__file__).replace(os.path.basename(__file__), '')
     # path = path[:path.rfind('//')]
     is_dir = is_directory()
-    if not is_dir:
-        os.mkdir(UPDATE_FOLDER)
-        upd_path = f'{UPDATE_FOLDER}/{UPDATE_NAME}'
-        create_download_window(UPDATE_URL, upd_path)
-        set_update_params(upd_path, is_dir, type_file)
-
-    else:
-        print('directory')
         # path = get_subpath(path, 2)
-        path = os.path.dirname(sys.executable)
-        path = get_subpath(path, 1)
-        Path(f'{path}\\config').mkdir(parents=True, exist_ok=True)
-        folder_path = f'{path}\\config\\updater.exe'
-        # my_file = str(Path(f"{folder_path}\\updater.exe")).replace('\\', '/')
-        create_download_window(UPDATE_URL, folder_path)
-        set_update_params(folder_path, is_dir, type_file)
+    path = os.path.dirname(sys.executable)
+    path = get_subpath(path, 1)
+    Path(f'{path}\\config').mkdir(parents=True, exist_ok=True)
+    folder_path = f'{path}\\config\\updater.exe'
+    my_file = folder_path.replace('\\', '/')
+    create_download_window(UPDATE_URL, folder_path)
+    set_update_params(my_file, type_file)
 
         # if os.path.isdir('config'):
         #     if my_file.is_file():
