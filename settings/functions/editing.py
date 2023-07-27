@@ -15,10 +15,12 @@ dict_columns = {12: ['Контрагент', 'Договор', 'Номер сч�
 def create_reaview(bank, account):
     bank["Сальдо"] = pd.to_numeric(bank["Сальдо"], errors='ignore')
     account["Сальдо"] = pd.to_numeric(account["Сальдо"], errors='ignore')
-    bank = bank.groupby(['Очередь', 'Дом'], as_index=False).agg(sum)
-    account = account.groupby(['Очередь', 'Дом'], as_index=False).agg(sum)
     bank = bank[['Очередь', 'Дом', 'Сальдо']]
     account = account[['Очередь', 'Дом', 'Сальдо']]
+
+    bank = bank.groupby(['Очередь', 'Дом'], as_index=False).agg(sum)
+    account = account.groupby(['Очередь', 'Дом'], as_index=False).agg(sum)
+
     bank.rename(columns={'Сальдо': 'Сальдо_Банк'}, inplace=True)
     account.rename(columns={'Сальдо': 'Сальдо_1C'}, inplace=True)
     result = pd.concat([bank, account])
