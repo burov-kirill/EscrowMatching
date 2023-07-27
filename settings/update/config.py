@@ -1,7 +1,7 @@
 ZIP_URL = 'https://raw.githubusercontent.com/burov-kirill/EscrowMatching/master/dist/EscrowMatching.7z'
 APP_NAME = 'EscrowMatching.exe'
 VERSION = '1.0.1'
-VERSION_URL = 'https://raw.githubusercontent.com/burov-kirill/EscrowMatching/main/__VERSION__'
+VERSION_URL = 'https://raw.githubusercontent.com/burov-kirill/EscrowMatching/main/__VERSION__.txt'
 UPDATE_NAME = 'update.exe'
 UPDATE_FOLDER = 'config'
 UPDATE_URL = 'https://raw.githubusercontent.com/burov-kirill/Updater/master/dist/update.exe'

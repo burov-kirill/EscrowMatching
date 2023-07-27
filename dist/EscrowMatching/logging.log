@@ -1,0 +1,54 @@
+INFO:user_log:Считывание файла C:/Users/cyril/Desktop/Самолет/Алхимово/ОСВ по счету 009.СЭ за ... - 1 квартал 2023 г.АЛХИМОВО.xlsx
+INFO:user_log:Сумма по данному документу: 8674530750.2
+INFO:user_log:Считывание файла Алхимово общий отчет-01.03.2023-31.03.2023.xlsx
+INFO:user_log:Сумма по данному документу: 8509794617.929998
+INFO:user_log:Начало процедуры нахождения соответствий в файлах
+ERROR:user_log:'Номер счета'
+Traceback (most recent call last):
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\indexes\base.py", line 3802, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas\_libs\index.pyx", line 138, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas\_libs\index.pyx", line 165, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas\_libs\hashtable_class_helper.pxi", line 5745, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas\_libs\hashtable_class_helper.pxi", line 5753, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'Номер счета'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "EscrowMatching.py", line 22, in <module>
+  File "C:\Users\cyril\PycharmProjects\EscrowMatching\settings\functions\editing.py", line 93, in find_matches
+    account_data = edit_acc_escrow(account_data, bank_data)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cyril\PycharmProjects\EscrowMatching\settings\functions\editing.py", line 84, in edit_acc_escrow
+    acc_data['Номер счета'] = acc_data.apply(fill_df_with_dict, axis = 1, args=[escrow_dict])
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\frame.py", line 9568, in apply
+    return op.apply().__finalize__(self, method="apply")
+           ^^^^^^^^^^
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\apply.py", line 764, in apply
+    return self.apply_standard()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\apply.py", line 891, in apply_standard
+    results, res_index = self.apply_series_generator()
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\apply.py", line 907, in apply_series_generator
+    results[i] = self.f(v)
+                 ^^^^^^^^^
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\apply.py", line 142, in f
+    return func(x, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cyril\PycharmProjects\EscrowMatching\settings\functions\editing.py", line 72, in fill_df_with_dict
+    if row['Номер счета'] == '0':
+       ~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\series.py", line 981, in __getitem__
+    return self._get_value(key)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\series.py", line 1089, in _get_value
+    loc = self.index.get_loc(label)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cyril\AppData\Local\Programs\Python\Python311\Lib\site-packages\pandas\core\indexes\base.py", line 3804, in get_loc
+    raise KeyError(key) from err
+KeyError: 'Номер счета'
+INFO:user_log:Авариный выход из программы
