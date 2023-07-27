@@ -146,6 +146,7 @@ class BankFile:
         for column in string_columns:
             df[column] = df[column].apply(lambda x: str(x).strip())
         df["Сальдо"] = pd.to_numeric(df["Сальдо"], errors='ignore')
+        df["Сумма по ДДУ"] = pd.to_numeric(df["Сумма по ДДУ"], errors='ignore')
         if 'Дата операции' in df.columns:
             df.drop(['Дата операции'], axis = 1, inplace=True)
         df = df.groupby(['Контрагент', 'Договор', 'Номер счета', 'Договор (полный)','Очередь', 'Дом'], as_index=False).agg(sum)
