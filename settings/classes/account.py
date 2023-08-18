@@ -27,6 +27,8 @@ class AccountFile:
         self.name_account_file = user_data_dict['account']
         self.check_nomenclature = user_data_dict['check_nomenclature']
         self.is_check_account = user_data_dict['check_account']
+        self.values_dict = dict()
+        self.is_change_group = False
         if len(user_data_dict['bank_name']) > 0:
             self.bank_name = user_data_dict['bank_name'][0]
         else:
@@ -123,21 +125,30 @@ class AccountFile:
         else:
             account_data['Очередь'] = account_data['Договор'].apply(self.get_query)
             account_data['Дом'] = account_data['Договор'].apply(self.get_house, args=[False])
+            account_data = self.check_data(account_data)
 
         if self.is_check_account:
             query_house_dict = self.create_query_house_dict(account_data)
             correct_values_dict = check_query_panel(query_house_dict, 'ОСВ')
+            self.values_dict = correct_values_dict
             account_data['Очередь'] = account_data['Тип'].apply(self.set_correct_query, args=[correct_values_dict])
             account_data['Дом'] = account_data['Тип'].apply(self.set_correct_house, args=[correct_values_dict])
 
         account_data['Договор'] = account_data['Договор'].apply(lambda x: str(x).upper())
         return account_data
+    def check_data(self, acc):
+        if len(acc['Тип'].drop_duplicates()) < len(acc['Дом'].drop_duplicates()):
+            self.is_change_group = True
+            acc['Тип'] = acc['Тип'] + '_' + acc['Очередь'] + '_' + acc['Дом']
+            return acc
+        else:
+            return acc
 
     def create_query_house_dict(self, df):
             result = dict()
             df = df.groupby(['Тип', 'Очередь', 'Дом'], as_index=False).count()
             for i in range(len(df)):
-                result[df['Тип'][i]] = (df['Очередь'][i], df['Дом'][i])
+                result[df['Тип'][i]] = ((df['Очередь'][i], df['Дом'][i]))
             return result
 
     @staticmethod
@@ -150,7 +161,7 @@ class AccountFile:
 
     @staticmethod
     def get_query(string):
-        parse_str = re.findall(r'(\d+\.?\d*)', string)
+        parse_str = re.findall(r'\d+[.-]?\d{0,2}', string)
         if len(parse_str)>=2:
             return parse_str[0]
         else:
@@ -158,7 +169,7 @@ class AccountFile:
 
     @staticmethod
     def get_house(string, option = True):
-        parse_str = re.findall(r'(\d+\.?\d*)', string)
+        parse_str = re.findall(r'\d+[.-]?\d{0,2}', string)
         if len(parse_str)>=2:
             if option:
                 return parse_str[-1]
@@ -186,8 +197,10 @@ class AccountFile:
             raise DifferentLengthError
         account = account.fillna(0)
         if len(account.columns) == 5:
-            self.TYPE_DOC = 0
+            self.TYPE_DOC = 1
             account.columns = ['Полный договор', "Контрагент", "Договор", "Сальдо", 'Тип']
+            account['Сумма по ДДУ'] = 0
+            account['Номер счета'] = ''
         else:
             account.columns = ['Полный договор', "Контрагент", "Договор", "Номер счета", "Сумма по ДДУ", "Сальдо", 'Тип']
             account['Номер счета'] = account['Номер счета'].apply(str)

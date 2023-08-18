@@ -30,10 +30,25 @@ def as_text(value):
         return ""
     return str(value)
 
-def auto_width_columns(ws):
-    for column_cells in ws.columns:
-        length = max(len(as_text(cell.value)) for cell in column_cells)
-        ws.column_dimensions[get_column_letter(column_cells[0].column)].width = length + 5
+def auto_width_columns(ws, opt = True):
+    columns = {2: 22,
+               3: 27,
+               4: 20,
+               5: 18,
+               6: 4,
+               7: 12,
+               8: 4,
+               9: 27,
+               10: 25,
+               11: 20,
+               12: 18}
+    if opt:
+        for column_cells in ws.columns:
+            length = max(len(as_text(cell.value)) for cell in column_cells)
+            ws.column_dimensions[get_column_letter(column_cells[0].column)].width = length + 5
+    else:
+        for col, width in columns.items():
+            ws.column_dimensions[get_column_letter(col)].width = width
 def decoration(result_dict, review, review_for_MSFO, one_more_review, contract_review, path):
     log.info(f'Оформление результирующего листа')
     control_bank_sum = 0
@@ -131,7 +146,7 @@ def excel_list_decoration(d, ws):
         bank_df, account_df = split_df(key, value)  # Разбиваем фрейм на банк и 1С
         past_data_frame_to_excel_list(ws, bank_df, last_row + 3, True)  # Заносим фрейм в лист
         past_data_frame_to_excel_list(ws, account_df, last_row + 3, False)
-        auto_width_columns(ws)
+        auto_width_columns(ws, False)
 
         control_bank_sum += bank_df['Сальдо'].sum()
         control_account_sum += account_df['Сальдо'].sum()
@@ -239,9 +254,9 @@ def split_df(key, tuple_df):
     else:
         bank.sort_values(by=['Договор (полный)'], inplace=True)
         account.sort_values(by=['Договор'], inplace=True)
-    bank.sort_values(by=['Договор (полный)', 'Контрагент'], inplace=True)
-    account.sort_values(by=['Тип','Договор', 'Контрагент'], inplace=True)
+    bank.sort_values(by=['Контрагент', 'Договор (полный)'], inplace=True)
+    account.sort_values(by=['Контрагент', 'Договор'], inplace=True)
     bank.dropna(axis=0, inplace=True)
-    bank = bank.loc[(bank['Сальдо']!=0)]
+    # bank = bank.loc[(bank['Сальдо']!=0)]
     return (bank, account)
 

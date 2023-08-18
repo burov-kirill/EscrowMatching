@@ -32,7 +32,7 @@ sg.LOOK_AND_FEEL_TABLE['SamoletTheme'] = {
 # image_path = resource_path("samolet.png")
 
 
-BANK_NAMES = ['СБЕР', 'Альфа Банк', 'Совкомбанк', 'Дом РФ', 'МКБ', 'ВТБ', 'ГПБ', 'ПСБ', "ВБРР", "Промсвязьбанк"]
+BANK_NAMES = ['СБЕР', 'Альфа Банк', 'Совкомбанк', 'Дом РФ', 'МКБ', 'ВТБ', 'ГПБ', 'ПСБ', "ВБРР", "Промсвязьбанк", 'Новый ПСБ']
 def set_img_option(img_path):
     img = Image.open(img_path)
     img_resized = img.resize((400, 100))
@@ -208,33 +208,11 @@ def check_query_panel(query_dict, bank_name = '', filename = ''):
         for key, value in query_dict.items():
             height = len(key)//60+1
             fields.append([sg.Col([[sg.Text(key,size=(60, height), background_color='#007bfb'),
-                                    sg.InputText(default_text=value[0], size=(10, height), key=f'{key}_query',
+                                    sg.InputText(default_text=value[0].split()[0], size=(10, height), key=f'{key}_query',
                                                  background_color='white', justification='center', text_color='black'),
-                                    sg.InputText(default_text=value[1], size=(10, height), key=f'{key}_house',
+                                    sg.InputText(default_text=value[1].split()[0], size=(10, height), key=f'{key}_house',
                                                  background_color='white', justification='center', text_color='black')
                                     ]])])
-            # col1.append([sg.Text(key,size=(60, 7), tooltip=key, background_color='#007bfb')])
-            # col2.append([sg.InputText(default_text=value[0],size=(60, 7),key=f'{key}_query',
-            #                         background_color='white', justification='center', text_color='black')])
-            # col3.append([sg.InputText(default_text=value[1], size=(60, 7), key=f'{key}_house',
-            #                         background_color='white', justification='center', text_color='black')])
-            # fields.append([sg.Text(key, size=(60, 7), tooltip=key, background_color='#007bfb'),
-            #                sg.InputText(default_text=value[0], key=f'{key}_query', size=(7,5),
-            #                                                         background_color='white', justification='center', text_color='black'),
-            #                sg.InputText(default_text=value[1], key=f'{key}_house', size=(7,5),
-            #                              background_color='white', justification='center', text_color='black')])
-        # layout = [
-        #     [sg.Text(f'Текущий файл \n{filename}', size=(70, 5), background_color='#007bfb')],
-        #     [sg.Text('Объект строительства',size=(60, 2), background_color='#007bfb'),
-        #      sg.Text('Очередь', size=(7, 2)), sg.Text('Дом', size=(7, 2),background_color='#007bfb')],
-        #     [sg.Column(fields, size=(700, 700), scrollable=True, key="Column", background_color='#007bfb')],
-        #     [sg.OK(), sg.Cancel()]
-        # ]
-        # FRAME = [
-        #     [sg.Column([[sg.Column(col1, vertical_alignment='top', size=(200,200)), sg.Column(col2, size=(200,200), vertical_alignment='top'),
-        #            sg.Column(col3, size=(200,200), vertical_alignment='top')]], scrollable = True,
-        #                background_color='#007bfb',vertical_scroll_only = False)]
-        # ]
         FRAME = [
             [sg.Column(fields,size=(700, 600), scrollable = True, background_color='#007bfb')]
         ]
@@ -247,17 +225,12 @@ def check_query_panel(query_dict, bank_name = '', filename = ''):
         for key, value in query_dict.items():
             fields.append([sg.Col([[sg.Text(value[0], size=(15, 2), background_color='#007bfb'),
                                     sg.Text(value[1], size=(15, 2), background_color='#007bfb'),
-                                    sg.InputText(default_text=value[0], key=f'{key}_query', size=(15, 2),
+                                    sg.InputText(default_text=value[0].split()[0], key=f'{key}_query', size=(15, 2),
                                                  background_color='white', justification='center', text_color='black'),
-                                    sg.InputText(default_text=value[1], key=f'{key}_house', size=(15, 2),
+                                    sg.InputText(default_text=value[1].split()[0], key=f'{key}_house', size=(15, 2),
                                                  background_color='white', justification='center', text_color='black')
                                     ]])])
-            # fields.append([sg.Text(value[0], size=(15, 2), background_color='#007bfb'),
-            #                sg.Text(value[1], size=(15, 2), background_color='#007bfb'),
-            #                sg.InputText(default_text=value[0], key=f'{key}_query', size=(15, 2),
-            #                             background_color='white', justification='center', text_color='black'),
-            #                sg.InputText(default_text=value[1], key=f'{key}_house', size=(15, 2),
-            #                             background_color='white', justification='center', text_color='black')])
+
         FRAME = [
             [sg.Column(fields, size=(700, 600), scrollable=True, background_color='#007bfb')]
         ]
@@ -271,17 +244,14 @@ def check_query_panel(query_dict, bank_name = '', filename = ''):
     else:
         for key, value in query_dict.items():
             height = len(key) // 60 + 1
-            fields.append([sg.Col([[sg.Text(key, size=(60, height), tooltip=key, background_color='#007bfb'),
-                                    sg.InputText(default_text=value[0], key=f'{key}_query', size=(7, height),
+            fields.append([sg.Col([[sg.Text(key, size=(40, height), background_color='#007bfb'),
+                                    sg.InputText(default_text=value[0].split()[0], key=f'{key}_query', size=(7, height),
                                                  background_color='white', justification='center', text_color='black'),
-                                    sg.InputText(default_text=value[1], key=f'{key}_house', size=(7, height),
-                                                 background_color='white', justification='center', text_color='black')
+                                    sg.InputText(default_text=value[1].split()[0], key=f'{key}_house', size=(7, height),
+                                                 background_color='white', justification='center', text_color='black'),
+                                    sg.Checkbox('ОСВ', default=True, key=f'{key}_option')
                                     ]], background_color='#007bfb')])
-            # fields.append([sg.Text(key, size=(60, 7), tooltip=key, background_color='#007bfb'),
-            #                sg.InputText(default_text=value[0], key=f'{key}_query', size=(7, 5),
-            #                             background_color='white', justification='center', text_color='black'),
-            #                sg.InputText(default_text=value[1], key=f'{key}_house', size=(7, 5),
-            #                             background_color='white', justification='center', text_color='black')])
+
         FRAME = [
             [sg.Column(fields, size=(700, 600), scrollable=True, background_color='#007bfb')]
         ]

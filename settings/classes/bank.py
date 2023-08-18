@@ -59,10 +59,16 @@ class BankFile:
             'status': ['Закрыт']
         },
         'ВБРР': {
-            'old_columns': ['Наименование клиента', 'Номер ДДУ', 'Сумма депонирования по ДДУ',
+            'old_columns': ['Наименование клиента', 'Номер ДДУ', 'Дата операции', 'Сумма депонирования по ДДУ',
                             'Остаток на счете эскроу', 'Номер счета эскроу'],
-            'new_columns': ['Контрагент', 'Договор', 'Сумма по ДДУ', 'Сальдо', 'Номер счета'],
+            'new_columns': ['Контрагент', 'Договор','Дата операции', 'Сумма по ДДУ', 'Сальдо', 'Номер счета'],
             'status': []
+        },
+        'Новый ПСБ': {
+            'old_columns': ['Наименование  депонента', 'Номер ДДУ', 'Дата операции ', 'Депонируемая сумма',
+                            'Сумма на счете Эскроу', 'Номер счета', 'Статус счета'],
+            'new_columns': ['Контрагент', 'Договор', 'Дата операции', 'Сумма по ДДУ', 'Сальдо', 'Номер счета', 'Статус'],
+            'status': ['Закрыт']
         },
     }
 
@@ -93,12 +99,19 @@ class BankFile:
             result = self.edit(self.bank_name, self.name_bank_file, short_file_name)
             self.count_documents+=1
         else:
-            temp_bank_data = pd.DataFrame(columns=self.NEW_COLUMNS)
+            if self.bank_name != 'ВБРР':
+                temp_bank_data = pd.DataFrame(columns=self.NEW_COLUMNS)
+            else:
+                temp_bank_data = pd.DataFrame(columns=self.COLUMNS_FOR_BANKS[self.bank_name]['old_columns'])
             for key, value in self.file_to_bank.items():
                 part_bank_data = self.edit(value[1], value[0], key)
                 temp_bank_data = pd.concat([temp_bank_data, part_bank_data])
                 self.count_documents += 1
             result = temp_bank_data
+            if self.bank_name == 'ВБРР':
+                result.dropna(inplace=True)
+                result = result[result['Наименование клиента'] != 'ИТОГО']
+                result = self.edit_bank_data(raw_bank_data=result, bank_type=self.bank_name)
         result = self.set_index_on_df(result)
         return result
 
@@ -122,6 +135,8 @@ class BankFile:
 
     def edit_bank_data(self, raw_bank_data, file_name = '', bank_type = ''):
         bank_data = self.remove_na_rows(raw_bank_data, bank_type)
+        if bank_type == 'ВБРР' and self.count_documents != len(self.file_to_bank) and self.bank_name != '':
+            return bank_data
         try:
             bank_data = self.select_bank_columns(bank_data, bank_type, file_name)
         except NotFoundColumns as exp:
@@ -156,6 +171,8 @@ class BankFile:
         return df
 
     def remove_na_rows(self, raw_bank_data, bank):
+        if self.bank_name == 'ВБРР' and self.count_documents == len(self.file_to_bank):
+            return raw_bank_data
         row_list = list(raw_bank_data.values)
         bank_data = pd.DataFrame(row_list)
         col_indexes = []
@@ -168,13 +185,22 @@ class BankFile:
             bank_data.drop(col_indexes, axis=1, inplace=True)
 
         row_indexes = []
+        date_element = ''
         for i in range(len(bank_data)):
             if sum(map(lambda x: x is None or x == '', bank_data.iloc[i])) > sum(map(lambda x: x is not None and x!='', bank_data.iloc[i])) or\
                     all(map(lambda x: str(x).isdigit(), bank_data.iloc[i])):
+                elements = [element for element in list(bank_data.iloc[i]) if 'За период' in str(element)]
+                if len(elements) == 1 and date_element == '':
+                    date_element = elements[0]
                 row_indexes.append(i)
 
         bank_data = bank_data.drop(index=row_indexes)
         bank_data.reset_index(inplace=True)
+        date_string = re.search(r'(\d{2}\/\d{2}\/\d{4})', date_element)
+        if date_string != None:
+            date_string = date_string.group()
+        else:
+            date_string = ''
 
         if bank == 'ПСБ':
             bank_data.drop(index=self.COLUMNS_FOR_BANKS[bank]['rows'], inplace=True)
@@ -187,14 +213,20 @@ class BankFile:
             #     log.info('Данный файл пуст')
             #     bank_data.drop(index=[0], inplace=True)
             bank_data.drop(columns=bank_data.columns[0], axis=1, inplace=True)
+        if bank == 'ВБРР':
+            bank_data['Дата операции'] = date_string
+            bank_data = bank_data[self.COLUMNS_FOR_BANKS[bank]['old_columns']]
         return bank_data
 
     def select_bank_columns(self, df, bank, filename):
         df.columns = df.columns.map(lambda x: x.replace('\n', ' ') if type(x) == str else x)
-        if bank == 'Совкомбанк' and 'Наименование Бенефициара' in df.columns:
-            df = df[['Наименование Бенефициара', 'Номер ДДУ', 'Размер депонируемой суммы', 'Исходящий остаток депонируемой суммы, RUB', 'Номер счета эскроу']]
-        else:
-            df = df[self.COLUMNS_FOR_BANKS[bank]['old_columns']]
+        if bank in ('МКБ', 'ГПБ') and all(map(lambda x: 'Статус' not in x,  df.columns)):
+            if bank == 'МКБ':
+                df['Статус'] = ''
+            else:
+                df['Статус счета'] = ''
+        df = df[self.COLUMNS_FOR_BANKS[bank]['old_columns']]
+
         if bank == 'СБЕР':
             df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
             df = self.set_query_and_house(df, bank, filename)
@@ -211,8 +243,10 @@ class BankFile:
             if 'Сумма по ДДУ' not in df.columns:
                 df['Сумма по ДДУ'] = 0
 
-            if bank == 'Альфа Банк':
+            if bank in ('Альфа Банк', 'Новый ПСБ'):
                 df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
+            if bank == 'Совкомбанк':
+                df['Контрагент'] = df['Контрагент'].apply(self.edit_account_agent)
         if bank == 'МКБ':
             df['Сальдо'] = df['Сальдо'].apply(lambda x: float(str(x).replace(u'\xa0', u'').replace(',', '.')))
             df['Сумма по ДДУ'] = df['Сумма по ДДУ'].apply(lambda x: float(str(x).replace(u'\xa0', u'').replace(',', '.')))
@@ -233,13 +267,33 @@ class BankFile:
             #     correct_values_dict = check_query_panel(query_house_dict, bank, filename)
             #     df['Очередь'] = df['Индекс'].apply(self.set_correct_query, args=[correct_values_dict])
             #     df['Дом'] = df['Индекс'].apply(self.set_correct_house, args=[correct_values_dict])
-        if bank in ('МКБ', 'ГПБ'):
+        if bank in ('МКБ', 'ГПБ', 'ВБРР'):
             df = self.drop_double_rows(df, bank)
-            df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
+            if bank != 'ВБРР':
+                df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
 
         df['Договор'] = df['Договор'].apply(lambda x: str(x).upper())
+        df['Договор'] = df['Договор'].apply(self.clear_contract)
+        df['Контрагент'] = df['Контрагент'].apply(self.clear_agent)
         return df
-
+    @staticmethod
+    def clear_agent(agent):
+        if isinstance(agent, str):
+            return agent.replace('ё', 'е')
+        else:
+            return agent
+    @staticmethod
+    def clear_contract(contract):
+        if isinstance(contract, str):
+            return contract.replace(' ', '')
+        else:
+            return contract
+    def edit_account_agent(self, agent):
+        agent_list = str(agent).split(' ')
+        if len(agent_list) == 3:
+            return f'{agent_list[0].upper()} {agent_list[1][0]}.{agent_list[2][0]}.'
+        else:
+            return agent
     def set_query_and_house(self, df, bank, filename):
         column = 'Объект строительства' if bank == 'СБЕР' else 'Индекс'
         if self.is_check:
@@ -266,6 +320,7 @@ class BankFile:
 
     def drop_double_rows(self, df, bank):
         values_for_bank = {'МКБ': ['Контрагент','Договор','Номер счета', 'Дата операции', 'Сальдо'],
+                           'ВБРР': ['Контрагент','Договор','Номер счета', 'Дата операции', 'Сальдо'],
                         'ГПБ': ['Контрагент', 'Договор', 'Эскроу', 'Дата операции']}
         df['Дата операции'] = pd.to_datetime(df['Дата операции'], errors='coerce', dayfirst=True)
         df['Номер счета'] = df['Номер счета'].apply(str)
@@ -274,12 +329,12 @@ class BankFile:
         df.reset_index(inplace=True)
         df['Help_Col'] = 0
         res = []
-        if bank == 'МКБ':
+        if bank in ('МКБ', 'ВБРР'):
             for i in range(len(df)):
                 if (df['Договор'][i], df['Номер счета'][i]) not in res:
                     df['Help_Col'][i] = 1
                     res.append((df['Договор'][i], df['Номер счета'][i]))
-        else:
+        elif bank == 'ГПБ':
             for i in range(len(df)):
                 if (df['Договор'][i], df['Эскроу'][i]) not in res and len(df.iloc[i:].loc[(df['Номер счета']==df['Номер счета'][i]) & (df['Договор']!=df['Договор'][i])])==0:
                     df['Help_Col'][i] = 1
@@ -345,7 +400,7 @@ class BankFile:
         #     return result
 
     def find_queries(self, string, option=True):
-        numbers = re.findall(r'(\d+\.?\d*)', string)
+        numbers = re.findall(r'\d+[,.-]?\d{0,2}', string)
         if len(numbers) >= 2:
             if option:
                 return numbers[0]
@@ -355,23 +410,40 @@ class BankFile:
             return 'бн'
 
     def get_query(self, string, option = True):
-        pattern = {1: '№ (\d+)',2: r'(\d+) дом',3:r'№(\d+\w\d*)', 4:r'№(\d*)', 5: r'корпус[а]? (\d\.?\d?)', 6: r'дом[а]? (\d+)', 7:r'корп\.? (\d+\.?\d?)'}
-        candidat = ''
-        for key, value in pattern.items():
-            lst = re.findall(value, string)
-            if len(lst)>0:
-                if key == 3:
-                    candidat =  lst[0].replace('к','.')
-                else:
-                    candidat =  lst[0]
-                if candidat in list(self.type_dict.keys()):
+        pattern = r'\d+[,.-]?\d{0,2}'
+        lst = re.findall(pattern, string)[::-1]
+        if len(lst)>0:
+            for element in lst:
+                if element in list(self.type_dict.keys()):
                     if option:
-                        return self.type_dict[candidat]
+                        return self.type_dict[element]
                     else:
-                        return candidat
-                else:
-                    return candidat
-        return string
+                        return element
+            return lst[-1]
+        else:
+            return string
+
+
+
+
+    # def get_query(self, string, option = True):
+    #     pattern = {1: '№ (\d+)',2: r'(\d+) дом',3:r'№(\d+\w\d*)', 4:r'№(\d*)', 5: r'корпус[а]? (\d\.?\d?)', 6: r'дом[а]? (\d+)', 7:r'корп\.? (\d+\.?\d?)'}
+    #     candidat = ''
+    #     for key, value in pattern.items():
+    #         lst = re.findall(value, string)
+    #         if len(lst)>0:
+    #             if key == 3:
+    #                 candidat =  lst[0].replace('к','.')
+    #             else:
+    #                 candidat =  lst[0]
+    #             if candidat in list(self.type_dict.keys()):
+    #                 if option:
+    #                     return self.type_dict[candidat]
+    #                 else:
+    #                     return candidat
+    #             else:
+    #                 return candidat
+    #     return string
 
 
     def fill_na_bank_data(self, df):
@@ -390,7 +462,7 @@ class BankFile:
         match = re.findall(pattern, contract)
         if len(match) >= 1:
             for element in match:
-                numbers = re.findall(r'(\d\.?\d*)', element)
+                numbers = re.findall(r'\d+[.-]?\d{0,2}', element)
                 if len(numbers[0])==1 or numbers[0].find('.')!=-1:
                     return element
             return match[-1]

@@ -1,5 +1,7 @@
 import re
 from copy import copy
+
+import numpy as np
 import pandas as pd
 
 pd.options.mode.chained_assignment = None
@@ -35,7 +37,7 @@ def create_review_for_MSFO(bank, account):
     bank_data = copy(bank.df)
     account_data = copy(account.df)
     bank_data["Сальдо"] = pd.to_numeric(bank_data["Сальдо"], errors='ignore')
-    # bank_data["Сумма по ДДУ"] = pd.to_numeric(bank_data["Сумма по ДДУ"], errors='ignore')
+    bank_data["Сумма по ДДУ"] = pd.to_numeric(bank_data["Сумма по ДДУ"], errors='ignore')
 
     # добавить ответвление на случай если не будет столбца Сумма по ДДУ
     bank_data = bank_data[['Очередь', 'Дом', "Сальдо", 'Сумма по ДДУ']]
@@ -70,26 +72,61 @@ def create_one_more_review_for_MSFO(bank):
     result = pd.concat([result, pd.DataFrame(last_row, index=[0])])
     return result
 
-def fill_df_with_dict(row, esc_dict):
+def fill_df_with_dict(row, esc_dict, opt = True):
     if row['Номер счета'] == '0':
         tpl_data = (row['Контрагент'], row['Договор'])
         match_acc = esc_dict.get(tpl_data, '0')
-        if match_acc != '0':
-            return f'!BLUE_{match_acc}'
-        else:
+        if opt:
             return match_acc
+        else:
+            if match_acc == '0':
+                return row["Тип"]
+            else:
+                return f'!BLUE_{row["Тип"]}'
+        # if match_acc != '0':
+        #     return f'!BLUE_{match_acc}'
+        # else:
+        #     return match_acc
     else:
         return row['Номер счета']
 def edit_acc_escrow(acc_data, bank_data):
     bank_data = bank_data[['Контрагент', 'Договор', 'Номер счета']]
     escrow_dict = {(row['Контрагент'], row['Договор']): row['Номер счета'] for (index, row) in bank_data.iterrows()}
     acc_data['Номер счета'] = acc_data.apply(fill_df_with_dict, axis = 1, args=[escrow_dict])
+    acc_data['Тип'] = acc_data.apply(fill_df_with_dict, axis=1, args=[escrow_dict])
     return acc_data
+
+def edit_account_df(account, bank, values_dict):
+    columns = ['Контрагент', "Договор"]
+    if len(values_dict)>0:
+        for key, value in values_dict.items():
+            if value[2]:
+                temp_bank = bank[(bank['Сальдо']!=0) & (bank['Очередь']==value[0]) & (bank['Дом']==value[1])]
+                if not temp_bank.empty:
+                    temp_account = account[account['Тип']==key]
+                    match_frame = pd.merge(temp_account, temp_bank, how='left', left_on=['Контрагент', "Договор"], right_on=['Контрагент', "Договор"])
+                    match_isna_frame = match_frame[pd.isna(match_frame['Сумма по ДДУ_y'])][['account_id', 'Сумма по ДДУ_x']]
+                    match_frame.fillna(0, inplace=True)
+                    match_isna_frame.fillna(0, inplace=True)
+                    match_frame = match_frame.groupby(['account_id'], as_index=False).agg(sum)[['account_id', 'Сумма по ДДУ_y']]
+                    match_frame.columns = ['account_id', 'Сумма по ДДУ']
+                    match_isna_frame = match_isna_frame.groupby(['account_id'], as_index=False).agg(sum)[['account_id', 'Сумма по ДДУ_x']]
+                    match_isna_frame.columns = ['account_id', 'Сумма по ДДУ']
+                    if len(match_frame) == len(temp_account):
+                        account = account.set_index('account_id')
+                        account.update(match_frame.set_index('account_id'))
+                        account.update(match_isna_frame.set_index('account_id'))
+                        account = account.reset_index()
+        account['Сумма по ДДУ'] = account['Сумма по ДДУ'].fillna(0)
+    return account
+
+
 
 
 def find_matches(account, bank):
     log.info(f'Начало процедуры нахождения соответствий в файлах')
     result_dict = dict()
+    account.df = edit_account_df(account.df, bank.df, account.values_dict)
     account_data = copy(account.df)
     bank_data = copy(bank.df)
     account_data = edit_acc_escrow(account_data, bank_data)
