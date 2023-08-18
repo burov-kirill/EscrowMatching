@@ -32,16 +32,18 @@ def as_text(value):
 
 def auto_width_columns(ws, opt = True):
     columns = {2: 22,
-               3: 27,
+               3: 20,
                4: 20,
                5: 18,
-               6: 4,
-               7: 12,
-               8: 4,
-               9: 27,
-               10: 25,
+               6: 18,
+               7: 4,
+               8: 18,
+               9: 4,
+               10: 27,
                11: 20,
-               12: 18}
+               12: 20,
+               13: 18,
+               14: 18}
     if opt:
         for column_cells in ws.columns:
             length = max(len(as_text(cell.value)) for cell in column_cells)
@@ -231,7 +233,8 @@ def past_data_frame_to_excel_list(ws, df: pd.DataFrame, cell_row: int, option: b
             for c_idx, value in enumerate(row, 10):
                 if str(value).startswith('!BLUE'):
                     value = value.split('_')[1]
-                    ws.cell(row=r_idx, column=c_idx, value=value).fill = PatternFill(fgColor='00BFFF', fill_type = "solid")
+                    ws.cell(row=r_idx, column=c_idx - 1).fill = PatternFill(fgColor='00BFFF', fill_type = "solid")
+                    ws.cell(row=r_idx, column=c_idx, value=value).number_format = '#,##0.00'
                 else:
                     ws.cell(row=r_idx, column=c_idx, value=value).number_format = '#,##0.00'
                 # ws.cell(row=r_idx, column=c_idx).number_format = '#,##0.00'

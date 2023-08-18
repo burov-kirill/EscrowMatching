@@ -279,7 +279,7 @@ class BankFile:
     @staticmethod
     def clear_agent(agent):
         if isinstance(agent, str):
-            return agent.replace('ё', 'е')
+            return agent.replace('ё', 'е').replace('Ё', 'Е')
         else:
             return agent
     @staticmethod
