@@ -116,6 +116,8 @@ class BankFile:
         return result
 
     def edit(self, bank_name, file_name, short_file_name):
+        if short_file_name == 'Александров 3.xlsx':
+            pass
         log.info(f'Считывание файла {short_file_name}')
         data = pd.DataFrame()
         try:
@@ -190,7 +192,7 @@ class BankFile:
             if sum(map(lambda x: x is None or x == '', bank_data.iloc[i])) > sum(map(lambda x: x is not None and x!='', bank_data.iloc[i])) or\
                     all(map(lambda x: str(x).isdigit(), bank_data.iloc[i])):
                 elements = [element for element in list(bank_data.iloc[i]) if 'За период' in str(element)]
-                if len(elements) == 1 and date_element == '':
+                if len(elements) >= 1 and date_element == '':
                     date_element = elements[0]
                 row_indexes.append(i)
 
@@ -245,7 +247,7 @@ class BankFile:
 
             if bank in ('Альфа Банк', 'Новый ПСБ'):
                 df = df.query(f'Статус not in {self.COLUMNS_FOR_BANKS[bank]["status"]}')
-            if bank == 'Совкомбанк':
+            if bank == 'Совкомбанк' or 'Совкомбанк' in list(map(lambda x: x[1], self.file_to_bank.values())):
                 df['Контрагент'] = df['Контрагент'].apply(self.edit_account_agent)
         if bank == 'МКБ':
             df['Сальдо'] = df['Сальдо'].apply(lambda x: float(str(x).replace(u'\xa0', u'').replace(',', '.')))
@@ -400,7 +402,9 @@ class BankFile:
         #     return result
 
     def find_queries(self, string, option=True):
-        numbers = re.findall(r'\d+[,.-]?\d{0,2}', string)
+        pattern = r'(?<!\d-)(\d+[.,]?\d{0,2})'
+        old_pattern = r'\d+[,.-]?\d{0,2}'
+        numbers = re.findall(pattern, string)
         if len(numbers) >= 2:
             if option:
                 return numbers[0]

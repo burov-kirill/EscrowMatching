@@ -27,6 +27,7 @@ class AccountFile:
         self.name_account_file = user_data_dict['account']
         self.check_nomenclature = user_data_dict['check_nomenclature']
         self.is_check_account = user_data_dict['check_account']
+        self.file_to_bank = user_data_dict['file_to_bank']
         self.values_dict = dict()
         self.is_change_group = False
         if len(user_data_dict['bank_name']) > 0:
@@ -116,7 +117,7 @@ class AccountFile:
         self.document_sum = self.sum_amount(account_data)
         account_data['Сальдо'] = account_data['Сальдо'].apply(str)
 
-        if bank_name == 'Совкомбанк':
+        if bank_name == 'Совкомбанк' or 'Совкомбанк' in list(map(lambda x: x[1], self.file_to_bank.values())):
             account_data['Контрагент'] = account_data['Контрагент'].apply(self.edit_account_agent)
 
         if self.check_nomenclature:
@@ -161,7 +162,9 @@ class AccountFile:
 
     @staticmethod
     def get_query(string):
-        parse_str = re.findall(r'\d+[.-]?\d{0,2}', string)
+        pattern = r'(?<!-)(\d+[.,]?\d{0,2})'
+        old_pattern = r'\d+[.-]?\d{0,2}'
+        parse_str = re.findall(pattern, string)
         if len(parse_str)>=2:
             return parse_str[0]
         else:
@@ -169,7 +172,9 @@ class AccountFile:
 
     @staticmethod
     def get_house(string, option = True):
-        parse_str = re.findall(r'\d+[.-]?\d{0,2}', string)
+        pattern = r'(?<!-)(\d+[.,]?\d{0,2})'
+        old_pattern = r'\d+[.-]?\d{0,2}'
+        parse_str = re.findall(pattern, string)
         if len(parse_str)>=2:
             if option:
                 return parse_str[-1]
