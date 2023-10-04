@@ -162,8 +162,8 @@ class AccountFile:
 
     @staticmethod
     def get_query(string):
-        pattern = r'(?<!-)(\d+[.,]?\d{0,2})'
-        old_pattern = r'\d+[.-]?\d{0,2}'
+        # pattern = r'(?<!-)(\d+[.,]?\d{0,2})'
+        pattern = r'\d+[.-]?\d{0,2}'
         parse_str = re.findall(pattern, string)
         if len(parse_str)>=2:
             return parse_str[0]
@@ -172,8 +172,8 @@ class AccountFile:
 
     @staticmethod
     def get_house(string, option = True):
-        pattern = r'(?<!-)(\d+[.,]?\d{0,2})'
-        old_pattern = r'\d+[.-]?\d{0,2}'
+        # pattern = r'(?<!-)(\d+[.,]?\d{0,2})'
+        pattern = r'\d+[.-]?\d{0,2}'
         parse_str = re.findall(pattern, string)
         if len(parse_str)>=2:
             if option:

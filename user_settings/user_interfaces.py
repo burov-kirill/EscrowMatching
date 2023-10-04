@@ -249,7 +249,7 @@ def check_query_panel(query_dict, bank_name = '', filename = ''):
                                                  background_color='white', justification='center', text_color='black'),
                                     sg.InputText(default_text=value[1].split()[0], key=f'{key}_house', size=(7, height),
                                                  background_color='white', justification='center', text_color='black'),
-                                    sg.Checkbox('ОСВ', default=True, key=f'{key}_option')
+                                    sg.Checkbox('ДДУ_Банк', default=False, key=f'{key}_option')
                                     ]], background_color='#007bfb')])
 
         FRAME = [

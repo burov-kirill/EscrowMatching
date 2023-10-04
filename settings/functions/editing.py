@@ -92,7 +92,7 @@ def fill_df_with_dict(row, esc_dict, opt = True):
 def edit_acc_escrow(acc_data, bank_data):
     bank_data = bank_data[['Контрагент', 'Договор', 'Номер счета']]
     escrow_dict = {(row['Контрагент'], row['Договор']): row['Номер счета'] for (index, row) in bank_data.iterrows()}
-    acc_data['Тип'] = acc_data.apply(fill_df_with_dict, axis=1, args=[escrow_dict, False])
+    # acc_data['Тип'] = acc_data.apply(fill_df_with_dict, axis=1, args=[escrow_dict, False])
     acc_data['Номер счета'] = acc_data.apply(fill_df_with_dict, axis = 1, args=[escrow_dict])
     return acc_data
 
@@ -101,8 +101,11 @@ def edit_account_df(account, bank, values_dict):
     if len(values_dict)>0:
         for key, value in values_dict.items():
             if value[2]:
-                temp_bank = bank[(bank['Сальдо']!=0) & (bank['Очередь']==value[0]) & (bank['Дом']==value[1])]
+                temp_bank = copy(bank)
+                temp_bank["Сальдо"] = pd.to_numeric(temp_bank["Сальдо"], errors='ignore')
+                temp_bank = temp_bank[(temp_bank['Сальдо']>0) & (temp_bank['Очередь']==value[0]) & (temp_bank['Дом']==value[1])]
                 if not temp_bank.empty:
+                    account.loc[account['Тип'] == key, ['Сумма по ДДУ']] = 0
                     temp_account = account[account['Тип']==key]
                     match_frame = pd.merge(temp_account, temp_bank, how='left', left_on=['Контрагент', "Договор"], right_on=['Контрагент', "Договор"])
                     match_isna_frame = match_frame[pd.isna(match_frame['Сумма по ДДУ_y'])][['account_id', 'Сумма по ДДУ_x']]
@@ -115,7 +118,7 @@ def edit_account_df(account, bank, values_dict):
                     if len(match_frame) == len(temp_account):
                         account = account.set_index('account_id')
                         account.update(match_frame.set_index('account_id'))
-                        account.update(match_isna_frame.set_index('account_id'))
+                        # account.update(match_isna_frame.set_index('account_id'))
                         account = account.reset_index()
         account['Сумма по ДДУ'] = account['Сумма по ДДУ'].fillna(0)
     return account

@@ -402,7 +402,7 @@ class BankFile:
         #     return result
 
     def find_queries(self, string, option=True):
-        pattern = r'(?<!\d-)(\d+[.,]?\d{0,2})'
+        pattern = r'(?<!\d-)(\d+[.]?\d{0,2})'
         old_pattern = r'\d+[,.-]?\d{0,2}'
         numbers = re.findall(pattern, string)
         if len(numbers) >= 2:
@@ -414,7 +414,7 @@ class BankFile:
             return 'бн'
 
     def get_query(self, string, option = True):
-        pattern = r'\d+[,.-]?\d{0,2}'
+        pattern = r'\d+[.-]?\d{0,2}'
         lst = re.findall(pattern, string)[::-1]
         if len(lst)>0:
             for element in lst:
