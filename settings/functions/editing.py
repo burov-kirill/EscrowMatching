@@ -93,7 +93,7 @@ def edit_acc_escrow(acc_data, bank_data):
     bank_data = bank_data[['Контрагент', 'Договор', 'Номер счета']]
     escrow_dict = {(row['Контрагент'], row['Договор']): row['Номер счета'] for (index, row) in bank_data.iterrows()}
     # acc_data['Тип'] = acc_data.apply(fill_df_with_dict, axis=1, args=[escrow_dict, False])
-    acc_data['Номер счета'] = acc_data.apply(fill_df_with_dict, axis = 1, args=[escrow_dict])
+    acc_data['Номер счета'] = acc_data.apply(fill_df_with_dict, axis = 1, args=[escrow_dict, True])
     return acc_data
 
 def edit_account_df(account, bank, values_dict):

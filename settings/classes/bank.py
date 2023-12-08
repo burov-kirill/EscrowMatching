@@ -189,7 +189,7 @@ class BankFile:
         row_indexes = []
         date_element = ''
         for i in range(len(bank_data)):
-            if sum(map(lambda x: x is None or x == '', bank_data.iloc[i])) > sum(map(lambda x: x is not None and x!='', bank_data.iloc[i])) or\
+            if sum(map(lambda x: x is None or str(x).strip() == '', bank_data.iloc[i])) > sum(map(lambda x: x is not None and str(x).strip()!='', bank_data.iloc[i])) or\
                     all(map(lambda x: str(x).isdigit(), bank_data.iloc[i])):
                 elements = [element for element in list(bank_data.iloc[i]) if 'За период' in str(element)]
                 if len(elements) >= 1 and date_element == '':
@@ -361,9 +361,6 @@ class BankFile:
             # result.setdefault(key_str, []).append(new_data['Новый договор'][i])
         df['Договор'] = df.apply(lambda x: result.get(f"{x['Контрагент']}_{x['Номер счета']}",
                                                                 ['бн'])[-1] if x['Договор'] == '' else x['Договор'], axis=1)
-        # for i in range(len(df)):
-        #     if df['Договор'][i] == '':
-        #         df['Договор'][i] = result.get(f"{df['Контрагент'][i]}_{df['Номер счета'][i]}", ['бн'])[-1]
         return df
 
     @staticmethod
@@ -385,21 +382,7 @@ class BankFile:
         df = df.groupby(columns_list, as_index=False).count()
         result = {df[query_column][i]: (df['Очередь'][i], df['Дом'][i]) for i in range(len(df))}
         return result
-        #     # result = dict()
-        #     df['Очередь'] = df['Объект строительства'].apply(self.get_query)
-        #     df['Дом'] = df['Объект строительства'].apply(self.get_query, args=[False])
-        #     df = df.groupby(['Объект строительства', 'Очередь', 'Дом'], as_index=False).count()
-        #     result = {df['Объект строительства'][i]: (df['Очередь'][i],df['Дом'][i]) for i in range(len(df))}
-        #     # for i in range(len(df)):
-        #     #     result[df['Объект строительства'][i]] = (df['Очередь'][i],df['Дом'][i])
-        #     return result
-        # else:
-        #     # result = dict()
-        #     df = df.groupby(['Индекс', 'Очередь', 'Дом'], as_index=False).count()
-        #     result = {df['Индекс'][i]: (df['Очередь'][i], df['Дом'][i]) for i in range(len(df))}
-        #     # for i in range(len(df)):
-        #     #     result[df['Индекс'][i]] = (df['Очередь'][i], df['Дом'][i])
-        #     return result
+
 
     def find_queries(self, string, option=True):
         pattern = r'(?<!\d-)(\d+[.]?\d{0,2})'
@@ -426,29 +409,6 @@ class BankFile:
             return lst[-1]
         else:
             return string
-
-
-
-
-    # def get_query(self, string, option = True):
-    #     pattern = {1: '№ (\d+)',2: r'(\d+) дом',3:r'№(\d+\w\d*)', 4:r'№(\d*)', 5: r'корпус[а]? (\d\.?\d?)', 6: r'дом[а]? (\d+)', 7:r'корп\.? (\d+\.?\d?)'}
-    #     candidat = ''
-    #     for key, value in pattern.items():
-    #         lst = re.findall(value, string)
-    #         if len(lst)>0:
-    #             if key == 3:
-    #                 candidat =  lst[0].replace('к','.')
-    #             else:
-    #                 candidat =  lst[0]
-    #             if candidat in list(self.type_dict.keys()):
-    #                 if option:
-    #                     return self.type_dict[candidat]
-    #                 else:
-    #                     return candidat
-    #             else:
-    #                 return candidat
-    #     return string
-
 
     def fill_na_bank_data(self, df):
         na_cols = ['Контрагент', 'Договор', 'Номер счета']
